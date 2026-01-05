@@ -1,0 +1,267 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{apa/apasortcite//global/global/global}
+    \entry{Carter2022}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=077f7438fbc617f6fa5af79c5bdd8cbb}{%
+           family={Carter},
+           familyi={C\bibinitperiod},
+           given={Matthew\bibnamedelima Keith},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{fullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{fullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{bibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorbibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authornamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorfullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorfullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{30}
+      \field{month}{9}
+      \field{title}{Techniques To Approach Least Privilege}
+      \field{year}{2022}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Garitano2024}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=87f4b68dc0cd3c6211fff5e2893b1e88}{%
+           family={Garitano},
+           familyi={G\bibinitperiod},
+           given={Garrett},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{fullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{fullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{bibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorbibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authornamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorfullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorfullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{8}
+      \field{month}{7}
+      \field{title}{Getting Started with RACF: Essential Configuration Steps}
+      \field{year}{2024}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Jain2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=436c8c0fe27f22e87b47ae9ca661b50f}{%
+           family={Jain},
+           familyi={J\bibinitperiod},
+           given={Nidhi},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{fullhash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{fullhashraw}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{bibnamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorbibnamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authornamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorfullhash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorfullhashraw}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \field{sortinit}{J}
+      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{17}
+      \field{month}{10}
+      \field{title}{Privilege Creep: The Silent Risk Lurking In Your Workforce}
+      \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Romero2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=b8f342358045334c291eb6a978bbce68}{%
+           family={Romero},
+           familyi={R\bibinitperiod},
+           given={Matthew},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{fullhash}{b8f342358045334c291eb6a978bbce68}
+      \strng{fullhashraw}{b8f342358045334c291eb6a978bbce68}
+      \strng{bibnamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorbibnamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authornamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorfullhash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorfullhashraw}{b8f342358045334c291eb6a978bbce68}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{14}
+      \field{month}{8}
+      \field{title}{Privilege Creep: What It Is and How To Prevent It}
+      \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+  \enddatalist
+  \datalist[entry]{apa/global//global/global/global}
+    \entry{Carter2022}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=077f7438fbc617f6fa5af79c5bdd8cbb}{%
+           family={Carter},
+           familyi={C\bibinitperiod},
+           given={Matthew\bibnamedelima Keith},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{fullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{fullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{bibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorbibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authornamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorfullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{authorfullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{30}
+      \field{month}{9}
+      \field{title}{Techniques To Approach Least Privilege}
+      \field{year}{2022}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Garitano2024}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=87f4b68dc0cd3c6211fff5e2893b1e88}{%
+           family={Garitano},
+           familyi={G\bibinitperiod},
+           given={Garrett},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{fullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{fullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{bibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorbibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authornamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorfullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \strng{authorfullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{8}
+      \field{month}{7}
+      \field{title}{Getting Started with RACF: Essential Configuration Steps}
+      \field{year}{2024}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Jain2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=436c8c0fe27f22e87b47ae9ca661b50f}{%
+           family={Jain},
+           familyi={J\bibinitperiod},
+           given={Nidhi},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{fullhash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{fullhashraw}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{bibnamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorbibnamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authornamehash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorfullhash}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \strng{authorfullhashraw}{436c8c0fe27f22e87b47ae9ca661b50f}
+      \field{sortinit}{J}
+      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{17}
+      \field{month}{10}
+      \field{title}{Privilege Creep: The Silent Risk Lurking In Your Workforce}
+      \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+    \entry{Romero2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=b8f342358045334c291eb6a978bbce68}{%
+           family={Romero},
+           familyi={R\bibinitperiod},
+           given={Matthew},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{fullhash}{b8f342358045334c291eb6a978bbce68}
+      \strng{fullhashraw}{b8f342358045334c291eb6a978bbce68}
+      \strng{bibnamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorbibnamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authornamehash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorfullhash}{b8f342358045334c291eb6a978bbce68}
+      \strng{authorfullhashraw}{b8f342358045334c291eb6a978bbce68}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{14}
+      \field{month}{8}
+      \field{title}{Privilege Creep: What It Is and How To Prevent It}
+      \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
