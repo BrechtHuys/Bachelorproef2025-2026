@@ -19,64 +19,218 @@
 
 \refsection{0}
   \datalist[entry]{apa/apasortcite//global/global/global}
-    \entry{Carter2022}{article}{}{}
+    \entry{RACFIMPLEMENTATION2026}{online}{}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=077f7438fbc617f6fa5af79c5bdd8cbb}{%
-           family={Carter},
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
            familyi={C\bibinitperiod},
-           given={Matthew\bibnamedelima Keith},
-           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \strng{namehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{fullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{fullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{bibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorbibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authornamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorfullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorfullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{1}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{1}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{day}{30}
-      \field{month}{9}
-      \field{title}{Techniques To Approach Least Privilege}
-      \field{year}{2022}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{IBM z/OS RACF Security Technical Implementation Guide}
+      \field{year}{2026}
       \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://stigviewer.cyberprotection.com/stigs/ibm_zos_racf
+      \endverb
+      \verb{url}
+      \verb https://stigviewer.cyberprotection.com/stigs/ibm_zos_racf
+      \endverb
     \endentry
-    \entry{Garitano2024}{article}{}{}
+    \entry{PrivilegePrinciple2026}{online}{}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=87f4b68dc0cd3c6211fff5e2893b1e88}{%
-           family={Garitano},
-           familyi={G\bibinitperiod},
-           given={Garrett},
-           giveni={G\bibinitperiod},
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \strng{namehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{fullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{fullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{bibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorbibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authornamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorfullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorfullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \field{sortinit}{G}
-      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{2}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{2}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{day}{8}
-      \field{month}{7}
-      \field{title}{Getting Started with RACF: Essential Configuration Steps}
-      \field{year}{2024}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Least privilege principle}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/docs/en/aix/7.2.0?topic=privileges-least-privilege-principle
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/docs/en/aix/7.2.0?topic=privileges-least-privilege-principle
+      \endverb
+    \endentry
+    \entry{Corporation2026}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{3}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{3}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{RACF® Administration Guide}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/docs/en/szs/3.1.0?topic=manual-racf-administration-guide
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/docs/en/szs/3.1.0?topic=manual-racf-administration-guide
+      \endverb
+    \endentry
+    \entry{ADMINGUIDE2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{4}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Security Server RACF Security Administrator's Guide}
+      \field{year}{2026}
+      \field{dateera}{ce}
+    \endentry
+    \entry{ISO27001}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{5}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{What is ISO 27001?}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/products/cloud/compliance/iso-27001
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/products/cloud/compliance/iso-27001
+      \endverb
+    \endentry
+    \entry{Force2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=51fe35d042b925e0bed8218d7dc011ab}{%
+           family={Force},
+           familyi={F\bibinitperiod},
+           given={Joint\bibnamedelima Task},
+           giveni={J\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{fullhash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{fullhashraw}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{bibnamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorbibnamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authornamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorfullhash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorfullhashraw}{51fe35d042b925e0bed8218d7dc011ab}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Security and Privacy ControlsforInformation Systems and Organizations}
+      \field{year}{2026}
       \field{dateera}{ce}
     \endentry
     \entry{Jain2025}{article}{}{}
@@ -137,68 +291,254 @@
       \field{month}{8}
       \field{title}{Privilege Creep: What It Is and How To Prevent It}
       \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+    \entry{CybersecurityBelgie2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=9f2ebd1e21a9dc9a297d00a663f95963}{%
+           family={Cybersecurity\bibnamedelima België},
+           familyi={C\bibinitperiod\bibinitdelim B\bibinitperiod},
+           given={Centrum},
+           giveni={C\bibinitperiod},
+           givenun=0,
+           prefix={voor},
+           prefixi={v\bibinitperiod}}}%
+      }
+      \strng{namehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{fullhash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{fullhashraw}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{bibnamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorbibnamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authornamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorfullhash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorfullhashraw}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \field{sortinit}{v}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{CYBER FUNDAMENTALSESSENTIEEL}
+      \field{year}{2026}
       \field{dateera}{ce}
     \endentry
   \enddatalist
   \datalist[entry]{apa/global//global/global/global}
-    \entry{Carter2022}{article}{}{}
+    \entry{RACFIMPLEMENTATION2026}{online}{}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=077f7438fbc617f6fa5af79c5bdd8cbb}{%
-           family={Carter},
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
            familyi={C\bibinitperiod},
-           given={Matthew\bibnamedelima Keith},
-           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \strng{namehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{fullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{fullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{bibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorbibnamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authornamehash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorfullhash}{077f7438fbc617f6fa5af79c5bdd8cbb}
-      \strng{authorfullhashraw}{077f7438fbc617f6fa5af79c5bdd8cbb}
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{1}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{1}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{day}{30}
-      \field{month}{9}
-      \field{title}{Techniques To Approach Least Privilege}
-      \field{year}{2022}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{IBM z/OS RACF Security Technical Implementation Guide}
+      \field{year}{2026}
       \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://stigviewer.cyberprotection.com/stigs/ibm_zos_racf
+      \endverb
+      \verb{url}
+      \verb https://stigviewer.cyberprotection.com/stigs/ibm_zos_racf
+      \endverb
     \endentry
-    \entry{Garitano2024}{article}{}{}
+    \entry{PrivilegePrinciple2026}{online}{}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=87f4b68dc0cd3c6211fff5e2893b1e88}{%
-           family={Garitano},
-           familyi={G\bibinitperiod},
-           given={Garrett},
-           giveni={G\bibinitperiod},
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \strng{namehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{fullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{fullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{bibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorbibnamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authornamehash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorfullhash}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \strng{authorfullhashraw}{87f4b68dc0cd3c6211fff5e2893b1e88}
-      \field{sortinit}{G}
-      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{2}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{2}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{day}{8}
-      \field{month}{7}
-      \field{title}{Getting Started with RACF: Essential Configuration Steps}
-      \field{year}{2024}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Least privilege principle}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/docs/en/aix/7.2.0?topic=privileges-least-privilege-principle
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/docs/en/aix/7.2.0?topic=privileges-least-privilege-principle
+      \endverb
+    \endentry
+    \entry{Corporation2026}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{3}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{3}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{RACF® Administration Guide}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/docs/en/szs/3.1.0?topic=manual-racf-administration-guide
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/docs/en/szs/3.1.0?topic=manual-racf-administration-guide
+      \endverb
+    \endentry
+    \entry{ADMINGUIDE2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{4}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Security Server RACF Security Administrator's Guide}
+      \field{year}{2026}
+      \field{dateera}{ce}
+    \endentry
+    \entry{ISO27001}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=4ba8983dc3bd802f7219ac36f8002295}{%
+           family={Corporation},
+           familyi={C\bibinitperiod},
+           given={International\bibnamedelimb Business\bibnamedelima Machines},
+           giveni={I\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{fullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{bibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorbibnamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authornamehash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhash}{4ba8983dc3bd802f7219ac36f8002295}
+      \strng{authorfullhashraw}{4ba8983dc3bd802f7219ac36f8002295}
+      \field{extraname}{5}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradate}{5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{What is ISO 27001?}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/products/cloud/compliance/iso-27001
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/products/cloud/compliance/iso-27001
+      \endverb
+    \endentry
+    \entry{Force2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=51fe35d042b925e0bed8218d7dc011ab}{%
+           family={Force},
+           familyi={F\bibinitperiod},
+           given={Joint\bibnamedelima Task},
+           giveni={J\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{fullhash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{fullhashraw}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{bibnamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorbibnamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authornamehash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorfullhash}{51fe35d042b925e0bed8218d7dc011ab}
+      \strng{authorfullhashraw}{51fe35d042b925e0bed8218d7dc011ab}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{Security and Privacy ControlsforInformation Systems and Organizations}
+      \field{year}{2026}
       \field{dateera}{ce}
     \endentry
     \entry{Jain2025}{article}{}{}
@@ -259,6 +599,38 @@
       \field{month}{8}
       \field{title}{Privilege Creep: What It Is and How To Prevent It}
       \field{year}{2025}
+      \field{dateera}{ce}
+    \endentry
+    \entry{CybersecurityBelgie2026}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=9f2ebd1e21a9dc9a297d00a663f95963}{%
+           family={Cybersecurity\bibnamedelima België},
+           familyi={C\bibinitperiod\bibinitdelim B\bibinitperiod},
+           given={Centrum},
+           giveni={C\bibinitperiod},
+           givenun=0,
+           prefix={voor},
+           prefixi={v\bibinitperiod}}}%
+      }
+      \strng{namehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{fullhash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{fullhashraw}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{bibnamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorbibnamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authornamehash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorfullhash}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \strng{authorfullhashraw}{9f2ebd1e21a9dc9a297d00a663f95963}
+      \field{sortinit}{v}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{21}
+      \field{month}{1}
+      \field{title}{CYBER FUNDAMENTALSESSENTIEEL}
+      \field{year}{2026}
       \field{dateera}{ce}
     \endentry
   \enddatalist
