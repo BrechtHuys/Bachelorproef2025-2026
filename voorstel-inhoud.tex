@@ -36,7 +36,7 @@ De onderzoeksdoelstelling van deze bachelorproef is het ontwikkelen van een tech
 
 Binnen het domein van identity and access management wordt het principe van least privilege algemeen erkend als een fundamentele beveiligingsmaatregel, waarbij gebruikers uitsluitend toegang krijgen tot de middelen die noodzakelijk zijn voor hun functie. Dit principe wordt breed toegepast in informatiebeveiligingsstandaarden en -frameworks om de impact van ongeautoriseerde toegang te minimaliseren en de risico’s van privilege escalerende exploitatie te beperken \autocite{PrivilegePrinciple2026, ADMINGUIDE2026}.
 
-Verschillende studies en technische richtlijnen tonen aan dat het afdwingen van het least privilegeprincipe in de praktijk complex is, vooral in omgevingen met langdurige gebruikersaccounts en frequente functiewijzigingen. Privilege creep — het geleidelijk opstapelen van toegangsrechten over tijd — ontstaat vaak als gevolg van organisatorische veranderingen, onvoldoende intrekkingsprocessen en het ontbreken van systematische herzieningen \autocite{Jain2025, Romero2025}. Deze problematiek geldt algemeen binnen identity management, maar is extra uitgesproken in mainframeomgevingen door de fijnmazige en historisch gegroeide toegangsstructuren en de centrale rol van systemen zoals RACF \autocite{Corporation2026, ADMINGUIDE2026}.
+Verschillende studies en technische richtlijnen tonen aan dat het afdwingen van het least privilegeprincipe in de praktijk complex is, vooral in omgevingen met langdurige gebruikersaccounts en frequente functiewijzigingen. Privilege creep het geleidelijk opstapelen van toegangsrechten over tijd  ontstaat vaak als gevolg van organisatorische veranderingen, onvoldoende intrekkingsprocessen en het ontbreken van systematische herzieningen \autocite{Jain2025, Romero2025}. Deze problematiek geldt algemeen binnen identity management, maar is extra uitgesproken in mainframeomgevingen door de fijnmazige en historisch gegroeide toegangsstructuren en de centrale rol van systemen zoals RACF \autocite{Corporation2026, ADMINGUIDE2026}.
 
 Specifiek voor IBM z/OS‑omgevingen biedt RACF uitgebreide mogelijkheden voor toegangscontrole via gebruikersprofielen, groepen, dataset‑ en resourceprofielen. RACF ondersteunt authenticatie, autorisatie, auditing en logging om de beveiliging van systeembronnen te waarborgen \autocite{ADMINGUIDE2026, Corporation2026}. De technische documentatie van IBM beschrijft deze mechanismen en de noodzakelijke expertise voor correct beheer, waaronder het configureren van profielen, toegangsrechten en het gebruik van auditmogelijkheden om activiteiten te monitoren \autocite{ADMINGUIDE2026}.
 
@@ -111,7 +111,7 @@ De testfase omvat minstens drie representatieve scenario’s:
 In de laatste fase worden de resultaten van de analyse- en ontwikkelfase samengebracht. De werking van de Proof of Concept wordt geëvalueerd op basis van correctheid, reproduceerbaarheid en praktische inzetbaarheid. Op basis van deze evaluatie worden concrete aanbevelingen geformuleerd voor het beheersen van privilege creep binnen RACF, met focus op periodieke access reviews en technische ondersteuning van auditprocessen.
 
 
-\subsection*{Gefaseerde planning}
+\subsection{Gefaseerde planning}
 
 Het onderzoek wordt uitgevoerd volgens onderstaande planning:
 

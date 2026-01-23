@@ -5,6 +5,7 @@
 \contentsline {subsection}{\numberline {3.1}Analysefase – Probleemdomein}{3}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Ontwikkel- en testfase – Oplossingsdomein}{3}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Synthese- en evaluatiefase}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Gefaseerde planning}{4}{subsection.3.4}%
 \contentsline {section}{\numberline {4}Verwacht resultaat, conclusie}{4}{section.4}%
 \contentsline {section}{Referenties}{4}{section.4}%
 \contentsfinish 
