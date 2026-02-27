@@ -110,17 +110,83 @@ De testfase omvat minstens drie representatieve scenario’s:
 
 In de laatste fase worden de resultaten van de analyse- en ontwikkelfase samengebracht. De werking van de Proof of Concept wordt geëvalueerd op basis van correctheid, reproduceerbaarheid en praktische inzetbaarheid. Op basis van deze evaluatie worden concrete aanbevelingen geformuleerd voor het beheersen van privilege creep binnen RACF, met focus op periodieke access reviews en technische ondersteuning van auditprocessen.
 
+\section{Requirementanalyse}
+\label{sec:requirements}
+
+Dit hoofdstuk beschrijft de functionele en niet-functionele vereisten voor de ontwikkeling van de Proof of Concept (PoC) die privilege creep binnen RACF-omgevingen detecteert. De requirements zijn afgeleid uit de analyse van het probleemdomein, de literatuurstudie, technische documentatie en de verwachtingen van betrokken stakeholders zoals RACF-beheerders en auditverantwoordelijken.
+
+\subsection{Doelstelling van de Proof of Concept}
+
+Het doel van de Proof of Concept is het ondersteunen van RACF-beheerders en auditors bij het identificeren van potentiële gevallen van privilege creep. De PoC moet inzicht bieden in historisch gegroeide, overbodige of risicovolle autorisaties en zo periodieke access reviews en auditprocessen faciliteren.
+
+\subsection{Stakeholders}
+
+De belangrijkste stakeholders binnen dit onderzoek zijn:
+\begin{itemize}
+	\item RACF security administrators, verantwoordelijk voor gebruikers- en autorisatiebeheer;
+	\item Auditverantwoordelijken, betrokken bij interne en externe compliance-audits;
+	\item Organisaties die z/OS- en RACF-omgevingen beheren en geconfronteerd worden met strengere compliance-eisen.
+\end{itemize}
+
+\subsection{Functionele requirements}
+
+De Proof of Concept moet minimaal voldoen aan volgende functionele vereisten:
+
+\begin{itemize}
+	\item FR1: Het systeem moet RACF-exportgegevens kunnen inlezen en verwerken zonder directe koppeling met een productieomgeving.
+	\item FR2: Het systeem moet gebruikersprofielen analyseren, inclusief \texttt{SPECIAL}, \texttt{OPERATIONS} en \texttt{AUDITOR}-attributen.
+	\item FR3: Het systeem moet groepslidmaatschappen en groepshiërarchieën in kaart brengen per gebruiker.
+	\item FR4: Het systeem moet dataset- en general resource autorisaties per gebruiker kunnen correleren.
+	\item FR5: Het systeem moet potentiële privilege creep detecteren op basis van vooraf gedefinieerde criteria, zoals:
+	\begin{itemize}
+		\item overlappende of cumulatieve autorisaties;
+		\item langdurig toegekende privileges zonder recente activiteit;
+		\item uitzonderlijke of historisch gegroeide rechten.
+	\end{itemize}
+	\item FR6: Het systeem moet per gebruiker een gestructureerd rapport genereren met gedetecteerde risico’s en bijhorende toelichting.
+\end{itemize}
+
+\subsection{Niet-functionele requirements}
+
+Naast functionele vereisten moet de Proof of Concept ook voldoen aan volgende niet-functionele eisen:
+
+\begin{itemize}
+	\item NFR1: De oplossing moet reproduceerbaar zijn, zodat analyses op identieke datasets steeds hetzelfde resultaat opleveren.
+	\item NFR2: De werking en output van de tool moeten transparant en interpreteerbaar zijn voor RACF-beheerders.
+	\item NFR3: De Proof of Concept mag geen wijzigingen aanbrengen aan RACF-configuraties of productiegegevens.
+	\item NFR4: De oplossing moet schaalbaar zijn voor RACF-omgevingen met een groot aantal gebruikers en autorisaties.
+	\item NFR5: De verwerking van gegevens moet conform zijn met geldende security- en compliance-richtlijnen.
+\end{itemize}
+
+\subsection{Randvoorwaarden en aannames}
+
+Bij de ontwikkeling van de Proof of Concept wordt uitgegaan van volgende randvoorwaarden en aannames:
+\begin{itemize}
+	\item Er is toegang tot representatieve RACF-exportgegevens of gesimuleerde datasets;
+	\item De focus ligt uitsluitend op detectie en rapportering, niet op automatische remediatie;
+	\item De oplossing wordt ontwikkeld als een standalone script of tool zonder grafische gebruikersinterface;
+	\item De Proof of Concept is gericht op technische haalbaarheid en conceptuele validatie, niet op productiegebruik.
+\end{itemize}
+
+\subsection{Afgrenzing}
+
+Buiten de scope van deze bachelorproef vallen:
+\begin{itemize}
+	\item real-time monitoring van RACF-activiteit;
+	\item automatische intrekking of wijziging van autorisaties;
+	\item integratie met externe Identity \& Access Management-platformen.
+\end{itemize}
 
 \subsection{Gefaseerde planning}
 
 Het onderzoek wordt uitgevoerd volgens onderstaande planning:
 
 \begin{itemize}
-	\item \textbf{Fase 1 – Analyse (februari – maart 2026):} literatuurstudie, analyse van RACF-documentatie, identificatie van relevante data-elementen en uitwerking van detectiecriteria.
-	\item \textbf{Fase 2 – Ontwerp (april 2026):} functioneel en technisch ontwerp van de Proof of Concept, inclusief datamodellen en rapportagestructuur.
-	\item \textbf{Fase 3 – Implementatie (mei 2026):} ontwikkeling van de Proof of Concept en verwerking van RACF-gegevens.
-	\item \textbf{Fase 4 – Testen en evaluatie (juni 2026):} uitvoering van representatieve scenario’s en evaluatie op basis van vooraf vastgelegde criteria.
-	\item \textbf{Fase 5 – Synthese en rapportering (juni 2026):} analyse van resultaten, formuleren van aanbevelingen en finaliseren van de bachelorproef.
+	\item \textbf{Fase 1 – Analyse (februari 2026):} literatuurstudie, analyse van RACF-documentatie, identificatie van relevante data-elementen en uitwerking van detectiecriteria.
+	\item \textbf{Fase 2 – Ontwerp (maart 2026):} functioneel en technisch ontwerp van de Proof of Concept, inclusief datamodellen en rapportagestructuur.
+	\item \textbf{Fase 3 – Implementatie (april 2026):} ontwikkeling van de Proof of Concept en verwerking van RACF-gegevens.
+	\item \textbf{Fase 4 – Testen en evaluatie (mei 2026):} uitvoering van representatieve scenario’s en evaluatie op basis van vooraf vastgelegde criteria.
+	\item \textbf{Fase 5 – Synthese en rapportering (mei 2026):} analyse van resultaten, formuleren van aanbevelingen en finaliseren van de bachelorproef.
 \end{itemize}
 
 

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.1.5)  23 JAN 2026 17:53
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.1.5)  29 JAN 2026 11:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1666,7 +1666,12 @@ Overfull \hbox (5.37482pt too wide) in paragraph at lines 22--23
 \TU/Montserrat(2)/m/it/10 toegangsbeheerproces van IBM z/OS-mainframes
  []
 
+File: HOGENT_Logo_Pos_rgb.png Graphic file (type bmp)
+<HOGENT_Logo_Pos_rgb.png>
+[1
 
+
+]
 Overfull \hbox (2.37234pt too wide) in paragraph at lines 24--25
 []\TU/Montserrat(2)/m/n/10 Om deze hoofdonderzoeksvraag te beantwoor-
  []
@@ -1676,12 +1681,7 @@ Overfull \hbox (1.5779pt too wide) in paragraph at lines 24--25
 \TU/Montserrat(2)/m/n/10 singsdomein. Binnen het probleemdomein wordt
  []
 
-File: HOGENT_Logo_Pos_rgb.png Graphic file (type bmp)
-<HOGENT_Logo_Pos_rgb.png>
-[1
 
-
-]
 Overfull \hbox (5.06235pt too wide) in paragraph at lines 28--29
 \TU/Montserrat(2)/m/n/10 mein volgende technische deelvragen onderzocht:
  []
@@ -1787,12 +1787,81 @@ Overfull \hbox (5.92903pt too wide) in paragraph at lines 104--105
 File: HOGENT_Logo_Pos_rgb.png Graphic file (type bmp)
 <HOGENT_Logo_Pos_rgb.png>
 [3]
-Overfull \hbox (19.71036pt too wide) in paragraph at lines 119--120
-\TU/Montserrat(2)/m/n/10 teratuurstudie, analyse van RACF-documentatie,
+Overfull \hbox (10.26035pt too wide) in paragraph at lines 127--128
+[]\TU/Montserrat(2)/m/n/10 Auditverantwoordelijken, betrokken bij interne
  []
 
 
-Overfull \hbox (2.47571pt too wide) in paragraph at lines 133--134
+Overfull \hbox (0.46234pt too wide) in paragraph at lines 128--129
+[]\TU/Montserrat(2)/m/n/10 Organisaties die z/OS- en RACF-omgevingen
+ []
+
+
+Overfull \hbox (10.33904pt too wide) in paragraph at lines 128--129
+\TU/Montserrat(2)/m/n/10 beheren en geconfronteerd worden met stren-
+ []
+
+
+Overfull \hbox (6.67233pt too wide) in paragraph at lines 136--137
+[]\TU/Montserrat(2)/m/n/10 FR1: Het systeem moet RACF-exportgegevens
+ []
+
+
+Overfull \hbox (3.16234pt too wide) in paragraph at lines 138--139
+[]\TU/Montserrat(2)/m/n/10 FR3: Het systeem moet groepslidmaatschap-
+ []
+
+
+Overfull \hbox (12.14232pt too wide) in paragraph at lines 144--145
+[]\TU/Montserrat(2)/m/n/10 uitzonderlijke of historisch gegroeide rech-
+ []
+
+
+Overfull \hbox (9.89902pt too wide) in paragraph at lines 151--152
+\TU/Montserrat(2)/m/n/10 Concept ook voldoen aan volgende niet-functionele
+ []
+
+
+Overfull \hbox (14.80035pt too wide) in paragraph at lines 154--155
+\TU/Montserrat(2)/m/n/10 zijn, zodat analyses op identieke datasets steeds
+ []
+
+
+Overfull \hbox (36.9257pt too wide) in paragraph at lines 158--159
+\TU/Montserrat(2)/m/n/10 conform zijn met geldende security- en compliance-
+ []
+
+
+Overfull \hbox (53.99902pt too wide) in paragraph at lines 165--166
+[]\TU/Montserrat(2)/m/n/10 Er is toegang tot representatieve RACF-exportgegeven
+s
+ []
+
+
+Overfull \hbox (48.4357pt too wide) in paragraph at lines 177--178
+[]\TU/Montserrat(2)/m/n/10 integratie met externe Identity & Access Management-
+
+ []
+
+File: HOGENT_Logo_Pos_rgb.png Graphic file (type bmp)
+<HOGENT_Logo_Pos_rgb.png>
+[4]
+Overfull \hbox (6.8217pt too wide) in paragraph at lines 185--186
+\TU/Montserrat(2)/m/n/10 studie, analyse van RACF-documentatie, iden-
+ []
+
+
+Overfull \hbox (0.74904pt too wide) in paragraph at lines 185--186
+\TU/Montserrat(2)/m/n/10 tificatie van relevante data-elementen en uit-
+ []
+
+
+Overfull \hbox (3.07318pt too wide) in paragraph at lines 194--194
+|[][]\TU/Montserrat(0)/b/n/14.4 Verwacht resultaat, conclusie| 
+ []
+
+
+Overfull \hbox (2.47571pt too wide) in paragraph at lines 199--200
 \TU/Montserrat(2)/m/n/10 ditvoorbereiding en het optimaliseren van het toe-
  []
 
@@ -1811,7 +1880,7 @@ LaTeX Font Info:    Font shape `TU/FiraMath(3)/m/n' will be
 (Font)              scaled to size 5.79938pt on input line 67.
 File: HOGENT_Logo_Pos_rgb.png Graphic file (type bmp)
 <HOGENT_Logo_Pos_rgb.png>
- [4] 
+ [5] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (Huys-Brecht-BPvoorstel.aux)
  ***********
@@ -1820,18 +1889,18 @@ L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `Huys-Brecht-BPvoorstel.out' has not changed.
 
-(rerunfilecheck)             Checksum: C990FE971D923FF90DD3825E89FA2225;1437.
+(rerunfilecheck)             Checksum: 82F4E65D2E95445E39720FEDA9ADB5EF;2636.
 Package logreq Info: Writing requests to 'Huys-Brecht-BPvoorstel.run.xml'.
 \openout1 = `Huys-Brecht-BPvoorstel.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27922 strings out of 402986
- 525527 string characters out of 5448297
- 1632821 words of memory out of 5000000
- 56275 multiletter control sequences out of 15000+600000
+ 27924 strings out of 402986
+ 525556 string characters out of 5448297
+ 1633862 words of memory out of 5000000
+ 56277 multiletter control sequences out of 15000+600000
  631281 words of font info for 110 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  101i,12n,121p,1557b,5743s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Huys-Brecht-BPvoorstel.pdf (4 pages).
+Output written on Huys-Brecht-BPvoorstel.pdf (5 pages).
