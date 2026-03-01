@@ -4,33 +4,76 @@
 
 \chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
 \label{ch:inleiding}
+IBM z/OS mainframes blijven een groot deel van de infrastructuur in financiële instellingen, grote industriële bedrijven en overheidsinstanties ondersteunen. Deze systemen verwerken transacties die niet alleen cruciaal zijn voor de dagelijkse operaties, maar ook beladen zijn met gevoelige informatie, en vereisen bijna perfecte beschikbaarheid en onwrikbare integriteit. Binnen een dergelijke omgeving is het beheer van toegangsrechten verre van triviaal. Een verkeerd toegewezen privilege, te veel rechten toegekend aan de verkeerde persoon, of aanhoudende toegang die verwijderd had moeten worden, kan zich naar buiten toe verspreiden en zowel de operationele continuïteit als de naleving beïnvloeden.
+Op z/OS wordt toegangscontrole grotendeels beheerd door RACF (Resource Access Control Facility). RACF houdt gebruikersprofielen, groepslidmaatschappen en machtigingen voor datasets en andere systeembronnen bij. Toch kan wat op papier ordelijk lijkt, in de praktijk snel verwarrend worden. De fijnmazige autorisatiestructuren van het systeem, in combinatie met decennia aan historische configuraties, resulteren in omgevingen van aanzienlijke complexiteit. In organisaties waar de dienstverbanden lang zijn en de rollen evolueren, kunnen toegangsrechten in de loop van de tijd stilletjes accumuleren, zelden worden deze teruggebracht tot wat functioneel nodig is.
 
-De inleiding moet de lezer net genoeg informatie verschaffen om het onderwerp te begrijpen en in te zien waarom de onderzoeksvraag de moeite waard is om te onderzoeken. In de inleiding ga je literatuurverwijzingen beperken, zodat de tekst vlot leesbaar blijft. Je kan de inleiding verder onderverdelen in secties als dit de tekst verduidelijkt. Zaken die aan bod kunnen komen in de inleiding~\autocite{Pollefliet2011}:
+Deze langzame accumilatie van privileges, privilege creep genoemd, is niet onmiddellijk duidelijk. De aanwezigheid ervan verhoogt maar toch subtiel de kans op misbruik, onbedoelde fouten of schendingen van beveiligingsnormen. De uitdaging is bijzonder acuut bij mainframes: machtigingen worden vaak geërfd via gelaagde groepshiërarchieën of generieke profielen, waardoor het moeilijk, zo niet onmogelijk, is om handmatig te bepalen welke rechten belangrijk blijven voor de huidige taken.
 
-\begin{itemize}
-  \item context, achtergrond
-  \item afbakenen van het onderwerp
-  \item verantwoording van het onderwerp, methodologie
-  \item probleemstelling
-  \item onderzoeksdoelstelling
-  \item onderzoeksvraag
-  \item \ldots
-\end{itemize}
+De huidige bachelorproef situeert zich volledig binnen het domein van mainframebeveiliging en identiteits- en toegangsbeheer. De focus ligt op technische detectie: het identificeren van privilege creep binnen RACF-configuraties door met analyse in plaats van beleidsvoorschriften. Het doel is om een reproduceerbare methode te ontwikkelen die in staat is om overmatige of inactieve machtigingen te identificeren op basis van alleen RACF-gegevens.
+
+Het is vermeldenswaard dat de reikwijdte opzettelijk klein is. Alleen IBM z/OS-omgevingen die RACF als het eerste beveiligingsmechanisme gebruiken, worden in overweging genomen. Realtime monitoring, geautomatiseerde herstelmaatregelen en integratie met bredere IAM-platforms zijn opzettelijk uitgesloten. De nadruk ligt uitsluitend op detectie en rapportage door, met zorgvuldige analyse van geëxporteerde gegevens.
+
+Methodologisch gezien mengt de studie literatuuronderzoek met praktische technische eisen en culmineert dit in een Proof of Concept (PoC). Deze combinatie maakt zowel een theoretische kaderstelling van privilege creep  als een praktische verkenning van de manifestaties ervan in een gecontroleerde omgeving, wat inzichten biedt die, indien voorzichtig geïnterpreteerd, grotere beveiligingspraktijken kunnen informeren zonder de grenzen van dit gerichte onderzoek te overschrijden.
+
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
 
-Uit je probleemstelling moet duidelijk zijn dat je onderzoek een meerwaarde heeft voor een concrete doelgroep. De doelgroep moet goed gedefinieerd en afgelijnd zijn. Doelgroepen als ``bedrijven,'' ``KMO's'', systeembeheerders, enz.~zijn nog te vaag. Als je een lijstje kan maken van de personen/organisaties die een meerwaarde zullen vinden in deze bachelorproef (dit is eigenlijk je steekproefkader), dan is dat een indicatie dat de doelgroep goed gedefinieerd is. Dit kan een enkel bedrijf zijn of zelfs één persoon (je co-promotor/opdrachtgever).
+In de praktijk bevinden organisaties die afhankelijk zijn van IBM z/OS RACF zich in een delicate spanning tussen operationele flexibiliteit en de rigide eisen van toegangsbeheer. Gebruikers kunnen tijdelijke of uitgebreide rechten krijgen om in het bijzonder taken uit te voeren, maar deze toestemmingen worden nauwelijks nauwkeurig herzien of ingetrokken. In de loop van de tijd stapelen dergelijke lapsussen zich op tot wat bekend staat als privilege creep - een bijna onmerkbare verschuiving van toegang die stilletjes de beveiligingsrisico's vergroot en de auditprocedures compliceert. Het gevaar hier is subtiel; het is niet altijd duidelijk totdat er een incident plaatsvindt, en zelfs dan kan het volgen van het pad van opgebouwde rechten als labyrintisch aanvoelen.
+De beoogde doelgroep voor deze thesis bestaat uit drie met elkaar verweven groepen:
+
+\begin{itemize}
+	\item RACF security administrators verantwoordelijk voor gebruikers- en autorisatiebeheer binnen z/OS-omgevingen;
+	\item Mainframe systeemprogrammeurs betrokken bij securityconfiguraties;
+	\item Interne en externe IT-auditors die compliancecontroles uitvoeren op toegangsbeheer;
+\end{itemize}
+
+Voor deze professionals blijft een systematische, reproduceerbare en objectieve manier om rechten te identificeren die onnodig of erger, potentieel riskant zijn, grotendeels ongrijpbaar. Huidige controles zijn vaak handmatig, arbeidsintensief en sterk afhankelijk van de ervaring en het oordeel van individuele beheerders. De afwezigheid van een technisch onderbouwde methode maakt privilege creep grotendeels onzichtbaar, alleen detecteerbaar door moeizame inspanning en zorgvuldige intuïtie.
+
+Deze bachelorproef probeert die kloof te overbruggen. In plaats van brede beleidsvoorschriften te bieden, stelt het een concrete, datagestuurde aanpak voor om detectie mogelijk te maken, een aanpak die RACF-beheerders in staat stelt om periodieke toegangsbeoordelingen uit te voeren en zich met  vertrouwen voor te bereiden op audits. Het doel is niet om rigide antwoorden op te leggen, maar om de schaduwen van verzamelde machtigingen te verlichten, waardoor de anders verborgen patronen van privilegecreep zichtbaar worden door zorgvuldige analyse van RACF-gegevens.
+
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
 
-Wees zo concreet mogelijk bij het formuleren van je onderzoeksvraag. Een onderzoeksvraag is trouwens iets waar nog niemand op dit moment een antwoord heeft (voor zover je kan nagaan). Het opzoeken van bestaande informatie (bv. ``welke tools bestaan er voor deze toepassing?'') is dus geen onderzoeksvraag. Je kan de onderzoeksvraag verder specifiëren in deelvragen. Bv.~als je onderzoek gaat over performantiemetingen, dan 
+In het hart van deze bachelorproef ligt een centrale vraag, die misschien eenvoudig lijkt maar vol complexiteit zit:
+\textit{Hoe kan privilege creep binnen het RACF-toegangsbeheer van IBM z/OS-mainframes technisch worden geïdentificeerd en geanalyseerd op basis van gebruikers-, groeps- en resourceprofielen, zodat gebruikersrechten in overeenstemming blijven met het least privilegeprincipe?}
+
+Om dit te benaderen, komen er sub-vragen naar voren, die elk een ander facet van het probleem onderzoeken:
+\begin{itemize}
+	\item Welke vormen van privilege creep komen voor binnen RACF-omgevingen?
+	\item Welke RACF-gegevens elementen gebruikersattributen, groepshiërarchieën, autorisatieprofielen lijken het meest informatief voor technische analyse?
+	\item Op basis van welke objectieve normen kunnen overmatige of slapende rechten worden onderscheiden van die wel echt nodig zijn?
+	\item Op welke manier kan het detectieproces worden vertaald naar een reproduceerbaar Proof of Concept, waardoor consistente resultaten mogelijk worden in plaats van ad-hoc beoordelingen?
+	\item Hoe ver kan een dergelijke oplossing realistisch gezien periodieke toegangsbeoordelingen en auditprocedures ondersteunen zonder de grenzen van zijn ontwerp te overschrijden?
+\end{itemize}
+
+Het moet worden opgemerkt dat dit onderzoek opzettelijk praktisch is. Hoewel het zich bezighoudt met de bestaande literatuur, is de bedoeling niet slechts om samen te vatten wat bekend is. In plaats daarvan onderneemt de studie een concrete onderzoek: het ontwerpen, implementeren en evalueren van een methode die in staat is om de anders ongrijpbare patronen van privilege creep waarneembaar te maken. Het doel is niet absolute zekerheid RACF-omgevingen zijn niet zo genereus—maar om het terrein te verlichten met een mate van technische helderheid die tot nu toe ontbrak.
+
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Wat is het beoogde resultaat van je bachelorproef? Wat zijn de criteria voor succes? Beschrijf die zo concreet mogelijk. Gaat het bv.\ om een proof-of-concept, een prototype, een verslag met aanbevelingen, een vergelijkende studie, enz.
+Het doel van deze bachelorproef is om een technische Proof of Concept te ontwikkelen en te evalueren die privilege creep binnen RACF minstens gedeeltelijk zichtbaar maakt door zorgvuldige analyse van RACF-gegevens. Het doel is niet om een onfeilbare oplossing te bieden absolute zekerheid is zelden haalbaar in deze complexe mainframe omgevingen maar om een methode te bieden die patronen belicht die anders verborgen zouden blijven.
+Het beoogde resultaat is een zelfstandige script of tool die in staat is om:
+
+\begin{itemize}
+	\item Het correlateren van gebruikersprofielen, groepshiërarchieën en resource-autorisatie s;
+
+	\item Het markeren van potentiële gevallen van privilege creep volgens een reeks vooraf gedefinieerde detectiecriteria;
+
+	\item Het produceren van gestructureerde rapporten die door beheerders en auditors op een zinvolle manier kunnen worden geïnterpreteerd.
+\end{itemize}
+
+Succes, voor de doeleinden van deze thesis, wordt beoordeeld langs drie dimensies:
+\begin{itemize}
+	\item Het Proof of Concept moet reproduceerbare en redelijk consistente resultaten opleveren;
+
+	\item De detectiemethodologie moet transparant en interpreteerbaar blijven voor de beoogde gebruikers.
+
+	\item De oplossing moet, althans binnen een representatieve testdataset, aantonen dat privilege creep technisch identificeerbaar is.
+\end{itemize}
+
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
@@ -41,10 +84,14 @@ Wat is het beoogde resultaat van je bachelorproef? Wat zijn de criteria voor suc
 
 De rest van deze bachelorproef is als volgt opgebouwd:
 
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
+In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie rond least privilege, privilege creep en RACF-beveiligingsmechanismen.
 
 In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
 
-% TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
+In Hoofdstuk~\ref{ch:analyse} wordt de analyse van RACF-gegevens en detectiecriteria uitgewerkt.
+
+In Hoofdstuk~\ref{ch:implementatie} wordt het ontwerp en de implementatie van de Proof of Concept beschreven.
+
+In Hoofdstuk~\ref{ch:evaluatie} worden de testscenario’s en evaluatieresultaten besproken.
 
 In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.

@@ -4,7 +4,85 @@
 
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
+Deze bachelorproef hanteert een toegepaste onderzoeksbenadering, waarbij zowel analytische als technische onderzoeksmethoden worden gecombineerd om het probleem van privilege creep in RACF-omgevingen te onderzoeken en een concrete oplossing te ontwikkelen. Het onderzoek is verdeeld in drie duidelijk gedefinieerde fasen: een analysefase, een ontwikkelings- en testfase, en een synthese- en evaluatiefase. Deze fasen zijn ontworpen om zowel het probleemgebied als het oplossingsgebied systematisch aan te pakken, en om een reproduceerbare, technisch onderbouwde aanpak te bereiken.
 
+\section{Analysefase Probleemgebied}
+In de analysefase wordt inzicht verkregen in het ontstaan, de impact en de mechanismen van privilege creep binnen RACF-omgevingen. Hiervoor worden drie onderzoeksmethoden gecombineerd: literatuuronderzoek, documentanalyse en interviews met belanghebbenden.
+\begin{itemize}
+	\item Literatuuronderzoek: Academische en technische bronnen worden bestudeerd met betrekking tot privilege creep, het principe van de Least privilege, en Identity & Access Management binnen mainframe-omgevingen. Dit biedt een theoretisch kader voor het begrijpen van de oorzaken en gevolgen van overmatige privileges.
+	\item Documentanalyse: RACF- en z/OS-gerelateerde documentatie wordt onderzocht, inclusief:
+	\begin{itemize}
+		\item IBM RACF Beheerder van Beveiliging Gids
+		\item Compliance- en auditrichtlijnen met betrekking tot toegangsbeheer en het principe van de Least privileges	
+		\item RACF Administratiehandleiding
+	\end{itemize}
+	\item Technische analyse van RACF-gegevens: RACF-extracts en configuratiegegevens worden onderzocht om inzicht te krijgen in gebruikersstructuren, groepshiërarchieën en toegewezen autorisaties. De focus ligt op het identificeren van patronen zoals:
+	\begin{itemize}
+		\item Gebruikers met overlappende groepslidmaatschappen	
+		\item Langdurig verleende privileges zonder duidelijke functionele noodzaak	
+		\item Afwijkingen van het principe van de Least privileges
+	\end{itemize}
+	Stakeholderinterviews: Semi-gestructureerde interviews worden afgenomen met RACF-beveiligingsbeheerders en auditmanagers om de technische bevindingen te contextualiseren. De interviews richten zich op:
+	\begin{itemize}
+		\item Huidige processen voor het verlenen en intrekken van rechten	
+		\item Knopen in toegangsevaluaties en audits	
+		\item Ervaringen en verwachtingen met betrekking tot geautomatiseerde detectie van privilege creep
+	\end{itemize}
+\end{itemize}
+
+\section{Ontwikkelings- en Testfase Oplossingsdomein}
+In deze fase wordt er een technische Proof of Concept (PoC) ontwikkeld om privilege creep systematisch te detecteren. De PoC analyseert specifieke RACF-gegevens , zoals:
+\begin{itemize}
+	\item Gebruikersprofielen (GEBRUIKERSID, SPECIAAL, OPERATIES, AUDITOR)
+	\item Groepslidmaatschappen en hiërarchieën
+	\item Dataset- en algemene bronnenprofielen met bijbehorende autorisaties
+	\item Beschikbare activiteit of laatste gebruiksinformatie
+\end{itemize}
+De PoC is geïmplementeerd als een zelfstandige script of tool die RACF-exportgegevens verwerkt. De nadruk ligt op reproduceerbaarheid en transparantie, zodat de analyse herhaalbaar is en de resultaten begrijpelijk blijven voor RACF-beheerders. De output bestaat uit gestructureerde rapporten die potentiële gevallen van privilege creep per gebruiker weergeven.
+\begin{itemize}
+	\item De PoC wordt getest in een gecontroleerde z/OS-testomgeving. De testfase omvat representatieve scenario's, waaronder:
+	\item Gebruikers met privileges van  groepen die niet langer overeenkomen met hun rol
+	\item Gebruikers met verhoogde privileges die lange tijd niet zijn gebruikt
+\end{itemize}
+
+\section{Synthese en Evaluatie Fase}
+Synthese- en Evaluatiefase In de laatste fase worden de resultaten van de analyse- en ontwikkelingsfases samengebracht. De werking van de PoC wordt geëvalueerd op:
+\begin{itemize}
+	\item Correctheid: detecteert de tool nauwkeurig gevallen van privilege creep?
+	\item Reproduceerbaarheid: levert de analyse identieke resultaten op bij herhaling?
+	\item Praktische toepasbaarheid: is de output interpreteerbaar en bruikbaar voor RACF-beheerders en auditors?
+\end{itemize}
+Op basis van deze evaluatie worden concrete aanbevelingen geformuleerd om privilege creep binnen RACF te beheersen, met de nadruk op periodieke toegangsbeoordelingen en technische ondersteuning voor auditprocessen.
+\section{Vereisteanalyse}
+De functionele en niet-functionele vereisten van de PoC zijn afgeleid van literatuur, documentatie en verwachtingen van belanghebbenden.
+Doel: Het ondersteunen van RACF-beheerders en auditors bij het identificeren van historisch gegroeide, overbodige of risicovolle autorisaties.
+
+Functionele vereisten (FR):
+\begin{itemize}
+	\item FR1: Het analyseren van gebruikersprofielen inclusief attributen
+	\item FR2: Het in kaart brengen van groepslidmaatschappen en hiërarchieën
+	\item FR3: Het genereren van gestructureerde rapporten per gebruiker
+\end{itemize}
+Niet-functionele vereisten (NFR):
+\begin{itemize}
+	\item NFR1: Reproduceerbare analyses
+	\item NFR2: Transparantie en interpreteerbaarheid voor beheerders
+	\item NFR3: Geen wijzigingen aan RACF-configuraties of productiedata
+	\item NFR4: Schaalbaarheid naar grote RACF-omgevingen
+	\item NFR5: Naleving van beveiligings- en compliance-richtlijnen
+\end{itemize}
+Voorwaarden en aannames: toegang tot representatieve RACF-exportgegevens, focus op detectie en rapportage, geen GUI, proof-of-concept gericht op technische haalbaarheid.
+
+Scope: geen realtime monitoring, geen automatische intrekking van autorisaties, of integratie met externe IAM-platforms.
+
+\section{Fasering van Planning}
+\begin{itemize}
+	\item Fase 1  Analyse (februari 2026): literatuuronderzoek, documentanalyse, identificatie van relevante data-elementen
+	\item Fase 2  Ontwerp (maart 2026): functioneel en technisch ontwerp van PoC, datamodellen en rapportagestructuur
+	\item Fase 3  Implementatie (april 2026): ontwikkeling van PoC en verwerking van RACF-gegevens
+	\item Fase 4  Testen en evaluatie (mei 2026): uitvoering van scenario's, evaluatie van juistheid en reproduceerbaarheid
+	\item Fase 5  Synthese en Rapportage (mei 2026): resultaten analyseren, aanbevelingen formuleren, bachelorthesis afronden
+\end{itemize}
 %% TODO: In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
 %% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
 %% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
@@ -26,5 +104,4 @@
 %% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
 %% en geef het een gepaste titel.
 
-\lipsum[21-25]
 
