@@ -15,26 +15,26 @@
 \section{Inleiding}%
 \label{sec:inleiding}
 
-Toegangsbeheer vormt een essentieel onderdeel van informatiebeveiliging binnen organisaties die gebruikmaken van IBM z/OS-mainframes. In deze omgevingen wordt RACF (Resource Access Control Facility) ingezet om gebruikers, groepen en toegangsrechten tot systeembronnen te beheren. Door de hoge mate van centralisatie en de bedrijfskritische aard van mainframes is een correct en gecontroleerd rechtenbeheer van cruciaal belang voor zowel operationele continuïteit als naleving van beveiligings- en compliancevereisten.
+Toegangsbeheer vormt een essentieel onderdeel van informatiebeveiliging binnen organisaties die gebruikmaken van IBM z/OS-mainframes. In deze omgevingen wordt RACF (Resource Access Control Facility) ingezet om gebruikers, groepen en toegangsrechten tot systeembronnen te beheren. Door de hoge mate van centralisatie en de bedrijfskritische aard van mainframes is een correct en gecontroleerd rechtenbeheer van cruciaal belang voor zowel operationele continuïteit als naleving van beveiligings en compliancevereisten.
 
-De doelgroep van deze bachelorproef bestaat uit IT-professionals die verantwoordelijk zijn voor identity and access management en security binnen z/OS-mainframeomgevingen, zoals mainframe security administrators, systeemprogrammeurs en audit- of complianceverantwoordelijken. In de praktijk worden zij geconfronteerd met complexe en historisch gegroeide RACF-configuraties, een toenemend aantal gebruikers en frequente functiewijzigingen.
+De doelgroep van deze bachelorproef bestaat uit IT-professionals die verantwoordelijk zijn voor identity and access management en security binnen z/OS-mainframeomgevingen, zoals mainframe security administrators, systeemprogrammeurs en audit- of complianceverantwoordelijken. In de praktijk worden zij geconfronteerd met complexe en historisch gegroeide RACF configuraties, een toenemend aantal gebruikers en frequente functiewijzigingen.
 
 Binnen deze context stelt zich het probleem van \emph{privilege creep}. Door functiewijzigingen, tijdelijke opdrachten en het ontbreken van systematische toegangsherzieningen behouden gebruikers vaak toegangsrechten die niet langer noodzakelijk zijn voor hun huidige rol. Dit leidt tot verhoogde beveiligingsrisico’s, verminderde auditbaarheid en potentiële non-compliance met interne en externe regelgeving. De centrale onderzoeksvraag van deze bachelorproef luidt dan ook: \emph{hoe kan privilege creep binnen het RACF-toegangsbeheerproces van IBM z/OS-mainframes worden geïdentificeerd, geanalyseerd en technisch beperkt zodat gebruikersrechten in lijn blijven met het least privilegeprincipe?}
 
-Om deze hoofdonderzoeksvraag te beantwoorden, wordt het onderzoek opgesplitst in deelvragen binnen het probleemdomein en het oplossingsdomein. Binnen het probleemdomein wordt onderzocht: (1) welke vormen van privilege creep voorkomen binnen RACF-omgevingen, (2) welke RACF-mechanismen bijdragen aan het ontstaan ervan, (3) welke organisatorische en technische oorzaken een rol spelen en (4) welke risico’s en compliance-implicaties hieruit voortvloeien.
+Om deze hoofdonderzoeksvraag te beantwoorden, wordt het onderzoek opgesplitst in deelvragen binnen het probleemdomein en het oplossingsdomein. Binnen het probleemdomein wordt onderzocht: (1) welke vormen van privilege creep voorkomen binnen RACF-omgevingen, (2) welke RACF-mechanismen bijdragen aan het ontstaan ervan, (3) welke organisatorische en technische oorzaken een rol spelen en (4) welke risico’s en compliance implicaties hieruit voortvloeien.
 
-Binnen het oplossingsdomein wordt gefocust op: (1) welke RACF-data-elementen geschikt zijn voor het technisch detecteren van privilege creep, (2) hoe overmatige of ongebruikte toegangsrechten objectief kunnen worden geïdentificeerd, (3) hoe deze detectie kan worden geautomatiseerd in een Proof of Concept en (4) in welke mate deze oplossing inzetbaar is ter ondersteuning van access reviews en security audits.
+Binnen het oplossingsdomein wordt gefocust op: (1) welke RACF data elementen geschikt zijn voor het technisch detecteren van privilege creep, (2) hoe overmatige of ongebruikte toegangsrechten objectief kunnen worden geïdentificeerd, (3) hoe deze detectie kan worden geautomatiseerd in een Proof of Concept en (4) in welke mate deze oplossing inzetbaar is ter ondersteuning van access reviews en security audits.
 
-Aanvullend worden binnen het oplossingsdomein volgende technische deelvragen onderzocht: (1) welke RACF-commando’s, extractbestanden of SMF-records nodig zijn om gebruikers-, groeps- en resource-autorisaties te verzamelen voor analyse, (2) op welke manier RACF-autorisaties technisch kunnen worden geanalyseerd om overmatige rechten te detecteren op basis van groepshiërarchie, rolafbakening en laatste gebruiksdata, en (3) hoe een technische Proof of Concept deze RACF-gegevens kan verwerken en omzetten in reproduceerbare rapporten die privilege creep objectief aantonen.
+Aanvullend worden binnen het oplossingsdomein volgende technische deelvragen onderzocht: (1) welke RACF commando’s, extractbestanden of SMF-records nodig zijn om gebruikers , groeps en resource autorisaties te verzamelen voor analyse, (2) op welke manier RACF autorisaties technisch kunnen worden geanalyseerd om overmatige rechten te detecteren op basis van groepshiërarchie, rolafbakening en laatste gebruiksdata, en (3) hoe een technische Proof of Concept deze RACF gegevens kan verwerken en omzetten in reproduceerbare rapporten die privilege creep objectief aantonen.
 
-De onderzoeksdoelstelling van deze bachelorproef is het ontwikkelen van een technisch onderbouwde Proof of Concept die privilege creep binnen RACF detecteerbaar maakt. Het onderzoek wordt als succesvol beschouwd wanneer de Proof of Concept in staat is om RACF-gegevens te analyseren, overmatige of ongebruikte rechten inzichtelijk te maken en gestructureerde rapporten te genereren die bruikbaar zijn voor periodieke toegangscontroles en auditvoorbereiding.
+De onderzoeksdoelstelling van deze bachelorproef is het ontwikkelen van een technisch onderbouwde Proof of Concept die privilege creep binnen RACF detecteerbaar maakt. Het onderzoek wordt als succesvol beschouwd wanneer de Proof of Concept in staat is om RACF gegevens te analyseren, overmatige of ongebruikte rechten inzichtelijk te maken en gestructureerde rapporten te genereren die bruikbaar zijn voor periodieke toegangscontroles en auditvoorbereiding.
 
 %---------- Stand van zaken ---------------------------------------------------
 
 \section{Literatuurstudie}%
 \label{sec:literatuurstudie}
 
-Binnen het domein van identity and access management wordt het principe van least privilege algemeen erkend als een fundamentele beveiligingsmaatregel, waarbij gebruikers uitsluitend toegang krijgen tot de middelen die noodzakelijk zijn voor hun functie. Dit principe wordt breed toegepast in informatiebeveiligingsstandaarden en -frameworks om de impact van ongeautoriseerde toegang te minimaliseren en de risico’s van privilege escalerende exploitatie te beperken \autocite{PrivilegePrinciple2026, ADMINGUIDE2026}.
+Binnen het domein van identity and access management wordt het principe van least privilege algemeen erkend als een fundamentele beveiligingsmaatregel, waarbij gebruikers uitsluitend toegang krijgen tot de middelen die noodzakelijk zijn voor hun functie. Dit principe wordt breed toegepast in informatiebeveiligingsstandaarden en frameworks om de impact van ongeautoriseerde toegang te minimaliseren en de risico’s van privilege escalerende exploitatie te beperken \autocite{PrivilegePrinciple2026, ADMINGUIDE2026}.
 
 Verschillende studies en technische richtlijnen tonen aan dat het afdwingen van het least privilegeprincipe in de praktijk complex is, vooral in omgevingen met langdurige gebruikersaccounts en frequente functiewijzigingen. Privilege creep het geleidelijk opstapelen van toegangsrechten over tijd  ontstaat vaak als gevolg van organisatorische veranderingen, onvoldoende intrekkingsprocessen en het ontbreken van systematische herzieningen \autocite{Jain2025, Romero2025}. Deze problematiek geldt algemeen binnen identity management, maar is extra uitgesproken in mainframeomgevingen door de fijnmazige en historisch gegroeide toegangsstructuren en de centrale rol van systemen zoals RACF \autocite{Corporation2026, ADMINGUIDE2026}.
 
@@ -56,20 +56,20 @@ Bestaand onderzoek rond privilege creep richt zich vaak op algemene IAM‑proble
 \section{Methodologie}%
 \label{sec:methodologie}
 
-Deze bachelorproef hanteert een toegepaste onderzoeksaanpak waarbij analytische en technische onderzoeksmethoden worden gecombineerd om zowel het probleemdomein als het oplossingsdomein te onderzoeken. Het onderzoek wordt uitgevoerd in drie duidelijk afgebakende fasen: een analysefase, een ontwikkel- en testfase en een synthese- en evaluatiefase.
+Deze bachelorproef hanteert een toegepaste onderzoeksaanpak waarbij analytische en technische onderzoeksmethoden worden gecombineerd om zowel het probleemdomein als het oplossingsdomein te onderzoeken. Het onderzoek wordt uitgevoerd in drie duidelijk afgebakende fasen: een analysefase, een ontwikkel en testfase en een synthese en evaluatiefase.
 
 \subsection{Analysefase – Probleemdomein}
 
-In de analysefase wordt inzicht verworven in het ontstaan en de impact van privilege creep binnen RACF-omgevingen. Hiervoor worden drie onderzoeksmethoden toegepast: literatuurstudie, documentanalyse en stakeholderinterviews.
+In de analysefase wordt inzicht verworven in het ontstaan en de impact van privilege creep binnen RACF omgevingen. Hiervoor worden drie onderzoeksmethoden toegepast: literatuurstudie, documentanalyse en stakeholderinterviews.
 
-De literatuurstudie richt zich op academische en technische bronnen rond privilege creep, least privilege en identity and access management. Daarnaast wordt een documentanalyse uitgevoerd op volgende RACF- en z/OS-gerelateerde documentatie:
+De literatuurstudie richt zich op academische en technische bronnen rond privilege creep, least privilege en identity and access management. Daarnaast wordt een documentanalyse uitgevoerd op volgende RACF en z/OS gerelateerde documentatie:
 \begin{itemize}
 	\item IBM RACF Security Administrator’s Guide \autocite{ADMINGUIDE2026}
-	\item Compliance- en auditrichtlijnen met betrekking tot toegangsbeheer en least privilege \autocite{CybersecurityBelgie2026}
+	\item Compliance en auditrichtlijnen met betrekking tot toegangsbeheer en least privilege \autocite{CybersecurityBelgie2026}
 	\item \mbox{RACF Administration Guide \autocite{Corporation2026}}
 \end{itemize}
 
-Aanvullend wordt een technische analyse uitgevoerd op RACF-configuratiegegevens. Hierbij worden RACF-extracten en configuratiegegevens onderzocht om inzicht te krijgen in gebruikersstructuren, groepshiërarchieën en toegekende autorisaties. De analyse focust op het identificeren van patronen zoals:
+Aanvullend wordt een technische analyse uitgevoerd op RACF configuratiegegevens. Hierbij worden RACF extracten en configuratiegegevens onderzocht om inzicht te krijgen in gebruikersstructuren, groepshiërarchieën en toegekende autorisaties. De analyse focust op het identificeren van patronen zoals:
 \begin{itemize}
 	\item gebruikers met meerdere of overlappende groepslidmaatschappen;
 	\item langdurig toegekende privileges zonder duidelijke functionele noodzaak;
@@ -84,20 +84,20 @@ Om de technische bevindingen te contextualiseren, worden semigestructureerde int
 	\item verwachtingen ten aanzien van geautomatiseerde detectie van privilege creep.
 \end{itemize}
 
-\subsection{Ontwikkel- en testfase – Oplossingsdomein}
+\subsection{Ontwikkel en testfase – Oplossingsdomein}
 
 In de tweede fase wordt een technische Proof of Concept ontwikkeld die privilege creep binnen RACF detecteert aan de hand van analyse van specifieke RACF-data-elementen.
 
-De Proof of Concept analyseert onder meer volgende RACF-data-elementen:
+De Proof of Concept analyseert onder meer volgende RACF data elementen:
 \begin{itemize}
-	\item Gebruikersprofielen (\texttt{USERID}, \texttt{SPECIAL-}, \texttt{OPERATIONS} en \texttt{AUDITOR}-attributen)
+	\item Gebruikersprofielen (\texttt{USERID}, \texttt{SPECIAL}, \texttt{OPERATIONS} en \texttt{AUDITOR}-attributen)
 	\item Groepslidmaatschappen en groepshiërarchieën
-	\item Dataset- en general resource profielen met bijhorende autorisaties;
-	\item Beschikbare laatste-gebruik- of activiteitsinformatie.
+	\item Dataset en general resource profielen met bijhorende autorisaties;
+	\item Beschikbare laatste gebruik of activiteitsinformatie.
 \end{itemize}
-De technische oplossing wordt geïmplementeerd als een script of tool dat RACF-exportgegevens verwerkt. De focus ligt op reproduceerbaarheid en transparantie, zodat de analyse herhaalbaar is en de resultaten begrijpelijk blijven voor RACF-beheerders. De output van de Proof of Concept bestaat uit gestructureerde rapporten waarin potentiële gevallen van privilege creep per gebruiker worden weergegeven.
+De technische oplossing wordt geïmplementeerd als een script of tool dat RACF exportgegevens verwerkt. De focus ligt op reproduceerbaarheid en transparantie, zodat de analyse herhaalbaar is en de resultaten begrijpelijk blijven voor RACF beheerders. De output van de Proof of Concept bestaat uit gestructureerde rapporten waarin potentiële gevallen van privilege creep per gebruiker worden weergegeven.
 
-De Proof of Concept wordt getest binnen een afgebakende z/OS-testomgeving of een gesimuleerde dataset die representatief is voor een productieomgeving. Hierbij worden fictieve gebruikers en autorisaties gebruikt om reële RACF-situaties na te bootsen zonder operationele systemen te beïnvloeden.
+De Proof of Concept wordt getest binnen een afgebakende z/OS testomgeving of een gesimuleerde dataset die representatief is voor een productieomgeving. Hierbij worden fictieve gebruikers en autorisaties gebruikt om reële RACF situaties na te bootsen zonder operationele systemen te beïnvloeden.
 
 De testfase omvat minstens drie representatieve scenario’s:
 \begin{itemize}
@@ -106,26 +106,26 @@ De testfase omvat minstens drie representatieve scenario’s:
 	\item Accounts met uitzonderlijke of historisch gegroeide autorisaties zonder duidelijke functionele noodzaak.
 \end{itemize}
 
-\subsection{Synthese- en evaluatiefase}
+\subsection{Synthese en evaluatiefase}
 
 In de laatste fase worden de resultaten van de analyse- en ontwikkelfase samengebracht. De werking van de Proof of Concept wordt geëvalueerd op basis van correctheid, reproduceerbaarheid en praktische inzetbaarheid. Op basis van deze evaluatie worden concrete aanbevelingen geformuleerd voor het beheersen van privilege creep binnen RACF, met focus op periodieke access reviews en technische ondersteuning van auditprocessen.
 
 \section{Requirementanalyse}
 \label{sec:requirements}
 
-Dit hoofdstuk beschrijft de functionele en niet-functionele vereisten voor de ontwikkeling van de Proof of Concept (PoC) die privilege creep binnen RACF-omgevingen detecteert. De requirements zijn afgeleid uit de analyse van het probleemdomein, de literatuurstudie, technische documentatie en de verwachtingen van betrokken stakeholders zoals RACF-beheerders en auditverantwoordelijken.
+Dit hoofdstuk beschrijft de functionele en niet-functionele vereisten voor de ontwikkeling van de Proof of Concept (PoC) die privilege creep binnen RACF-omgevingen detecteert. De requirements zijn afgeleid uit de analyse van het probleemdomein, de literatuurstudie, technische documentatie en de verwachtingen van betrokken stakeholders zoals RACF beheerders en auditverantwoordelijken.
 
 \subsection{Doelstelling van de Proof of Concept}
 
-Het doel van de Proof of Concept is het ondersteunen van RACF-beheerders en auditors bij het identificeren van potentiële gevallen van privilege creep. De PoC moet inzicht bieden in historisch gegroeide, overbodige of risicovolle autorisaties en zo periodieke access reviews en auditprocessen faciliteren.
+Het doel van de Proof of Concept is het ondersteunen van RACF beheerders en auditors bij het identificeren van potentiële gevallen van privilege creep. De PoC moet inzicht bieden in historisch gegroeide, overbodige of risicovolle autorisaties en zo periodieke access reviews en auditprocessen faciliteren.
 
 \subsection{Stakeholders}
 
 De belangrijkste stakeholders binnen dit onderzoek zijn:
 \begin{itemize}
-	\item RACF security administrators, verantwoordelijk voor gebruikers- en autorisatiebeheer;
-	\item Auditverantwoordelijken, betrokken bij interne en externe compliance-audits;
-	\item Organisaties die z/OS- en RACF-omgevingen beheren en geconfronteerd worden met strengere compliance-eisen.
+	\item RACF security administrators, verantwoordelijk voor gebruikers en autorisatiebeheer;
+	\item Auditverantwoordelijken, betrokken bij interne en externe compliance audits;
+	\item Organisaties die z/OS en RACF omgevingen beheren en geconfronteerd worden met strengere compliance eisen.
 \end{itemize}
 
 \subsection{Functionele requirements}
@@ -133,10 +133,10 @@ De belangrijkste stakeholders binnen dit onderzoek zijn:
 De Proof of Concept moet minimaal voldoen aan volgende functionele vereisten:
 
 \begin{itemize}
-	\item FR1: Het systeem moet RACF-exportgegevens kunnen inlezen en verwerken zonder directe koppeling met een productieomgeving.
-	\item FR2: Het systeem moet gebruikersprofielen analyseren, inclusief \texttt{SPECIAL}, \texttt{OPERATIONS} en \texttt{AUDITOR}-attributen.
+	\item FR1: Het systeem moet RACF exportgegevens kunnen inlezen en verwerken zonder directe koppeling met een productieomgeving.
+	\item FR2: Het systeem moet gebruikersprofielen analyseren, inclusief \texttt{SPECIAL}, \texttt{OPERATIONS} en \texttt{AUDITOR}attributen.
 	\item FR3: Het systeem moet groepslidmaatschappen en groepshiërarchieën in kaart brengen per gebruiker.
-	\item FR4: Het systeem moet dataset- en general resource autorisaties per gebruiker kunnen correleren.
+	\item FR4: Het systeem moet dataset en general resource autorisaties per gebruiker kunnen correleren.
 	\item FR5: Het systeem moet potentiële privilege creep detecteren op basis van vooraf gedefinieerde criteria, zoals:
 	\begin{itemize}
 		\item overlappende of cumulatieve autorisaties;
@@ -152,17 +152,17 @@ Naast functionele vereisten moet de Proof of Concept ook voldoen aan volgende ni
 
 \begin{itemize}
 	\item NFR1: De oplossing moet reproduceerbaar zijn, zodat analyses op identieke datasets steeds hetzelfde resultaat opleveren.
-	\item NFR2: De werking en output van de tool moeten transparant en interpreteerbaar zijn voor RACF-beheerders.
-	\item NFR3: De Proof of Concept mag geen wijzigingen aanbrengen aan RACF-configuraties of productiegegevens.
-	\item NFR4: De oplossing moet schaalbaar zijn voor RACF-omgevingen met een groot aantal gebruikers en autorisaties.
-	\item NFR5: De verwerking van gegevens moet conform zijn met geldende security- en compliance-richtlijnen.
+	\item NFR2: De werking en output van de tool moeten transparant en interpreteerbaar zijn voor RACF beheerders.
+	\item NFR3: De Proof of Concept mag geen wijzigingen aanbrengen aan RACF configuraties of productiegegevens.
+	\item NFR4: De oplossing moet schaalbaar zijn voor RACF omgevingen met een groot aantal gebruikers en autorisaties.
+	\item NFR5: De verwerking van gegevens moet conform zijn met geldende security en compliance richtlijnen.
 \end{itemize}
 
 \subsection{Randvoorwaarden en aannames}
 
 Bij de ontwikkeling van de Proof of Concept wordt uitgegaan van volgende randvoorwaarden en aannames:
 \begin{itemize}
-	\item Er is toegang tot representatieve RACF-exportgegevens of gesimuleerde datasets;
+	\item Er is toegang tot representatieve RACF exportgegevens of gesimuleerde datasets;
 	\item De focus ligt uitsluitend op detectie en rapportering, niet op automatische remediatie;
 	\item De oplossing wordt ontwikkeld als een standalone script of tool zonder grafische gebruikersinterface;
 	\item De Proof of Concept is gericht op technische haalbaarheid en conceptuele validatie, niet op productiegebruik.
@@ -172,9 +172,9 @@ Bij de ontwikkeling van de Proof of Concept wordt uitgegaan van volgende randvoo
 
 Buiten de scope van deze bachelorproef vallen:
 \begin{itemize}
-	\item real-time monitoring van RACF-activiteit;
+	\item real time monitoring van RACF activiteit;
 	\item automatische intrekking of wijziging van autorisaties;
-	\item integratie met externe Identity \& Access Management-platformen.
+	\item integratie met externe Identity \& Access Management platformen.
 \end{itemize}
 
 \subsection{Gefaseerde planning}
@@ -182,9 +182,9 @@ Buiten de scope van deze bachelorproef vallen:
 Het onderzoek wordt uitgevoerd volgens onderstaande planning:
 
 \begin{itemize}
-	\item \textbf{Fase 1 – Analyse (februari 2026):} literatuurstudie, analyse van RACF-documentatie, identificatie van relevante data-elementen en uitwerking van detectiecriteria.
+	\item \textbf{Fase 1 – Analyse (februari 2026):} literatuurstudie, analyse van RACF documentatie, identificatie van relevante data elementen en uitwerking van detectiecriteria.
 	\item \textbf{Fase 2 – Ontwerp (maart 2026):} functioneel en technisch ontwerp van de Proof of Concept, inclusief datamodellen en rapportagestructuur.
-	\item \textbf{Fase 3 – Implementatie (april 2026):} ontwikkeling van de Proof of Concept en verwerking van RACF-gegevens.
+	\item \textbf{Fase 3 – Implementatie (april 2026):} ontwikkeling van de Proof of Concept en verwerking van RACF gegevens.
 	\item \textbf{Fase 4 – Testen en evaluatie (mei 2026):} uitvoering van representatieve scenario’s en evaluatie op basis van vooraf vastgelegde criteria.
 	\item \textbf{Fase 5 – Synthese en rapportering (mei 2026):} analyse van resultaten, formuleren van aanbevelingen en finaliseren van de bachelorproef.
 \end{itemize}
@@ -194,9 +194,9 @@ Het onderzoek wordt uitgevoerd volgens onderstaande planning:
 \section{Verwacht resultaat, conclusie}%
 \label{sec:verwachte_resultaten}
 
-Dit onderzoek zal naar verwachting resulteren in een technische Proof of Concept die privilege creep binnen RACF-omgevingen systematisch kan detecteren. De Proof of Concept genereert duidelijke rapporten en indicatoren waarmee gebruikers en rechten geïdentificeerd worden die mogelijk niet langer functioneel noodzakelijk zijn.
+Dit onderzoek zal naar verwachting resulteren in een technische Proof of Concept die privilege creep binnen RACF omgevingen systematisch kan detecteren. De Proof of Concept genereert duidelijke rapporten en indicatoren waarmee gebruikers en rechten geïdentificeerd worden die mogelijk niet langer functioneel noodzakelijk zijn.
 
 Voor de beoogde doelgroep biedt dit resultaat concrete meerwaarde, doordat het ondersteuning biedt bij periodieke access reviews, auditvoorbereiding en het optimaliseren van het toegangsbeheerproces. Bovendien kan de oplossing dienen als basis voor verdere automatisering of integratie binnen bestaande securityprocessen.
 
-Indien de verwachte resultaten worden bevestigd, kan worden geconcludeerd dat een technisch ondersteunde detectiemethode een effectieve bijdrage levert aan het beheersen van privilege creep binnen RACF. Dit versterkt de security posture en bevordert de naleving van het least privilege-principe in IBM z/OS mainframe omgevingen.
+Indien de verwachte resultaten worden bevestigd, kan worden geconcludeerd dat een technisch ondersteunde detectiemethode een effectieve bijdrage levert aan het beheersen van privilege creep binnen RACF. Dit versterkt de security posture en bevordert de naleving van het least privilege principe in IBM z/OS mainframe omgevingen.
 
