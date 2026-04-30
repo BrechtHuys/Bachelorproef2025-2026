@@ -2,17 +2,83 @@
 %% Conclusie
 %%=============================================================================
 
-\chapter{Conclusie}%
+\chapter[Conclusie]{Conclusie: antwoord op de onderzoeksvraag}%
 \label{ch:conclusie}
 
-% TODO: Trek een duidelijke conclusie, in de vorm van een antwoord op de
-% onderzoeksvra(a)g(en). Wat was jouw bijdrage aan het onderzoeksdomein en
-% hoe biedt dit meerwaarde aan het vakgebied/doelgroep? 
-% Reflecteer kritisch over het resultaat. In Engelse teksten wordt deze sectie
-% ``Discussion'' genoemd. Had je deze uitkomst verwacht? Zijn er zaken die nog
-% niet duidelijk zijn?
-% Heeft het onderzoek geleid tot nieuwe vragen die uitnodigen tot verder 
-%onderzoek?
+Deze bachelorproef onderzocht hoe privilege creep in RACF zichtbaar kan worden gemaakt. Privilege creep betekent dat gebruikers na verloop van tijd meer rechten houden dan ze nodig hebben. In RACF gebeurt dit vaak via groepen.
 
-\lipsum[76-80]
+De PoC toont dat gebruikers vergeleken kunnen worden op basis van hun groepen. Voor elke gebruiker wordt een groepslijst gemaakt. Daarna zoekt de PoC de meest gelijkaardige gebruiker. Het rapport toont de gebruiker, de referentiegebruiker, de similarity score, de additional groups en de missing groups.
 
+Additional groups zijn de belangrijkste aandachtspunten. Ze tonen groepen die een gebruiker extra heeft ten opzichte van de referentiegebruiker. Die groepen kunnen wijzen op privilege creep. Ze zijn niet automatisch fout. Een beheerder moet altijd controleren of de groep nog nodig is.
+
+De PoC werd in drie versies gebouwd. Versie 1 gebruikt JCL en twee REXX scripts. Versie 2 gebruikt CARLa om gebruikers op te halen. Versie 3 gebruikt CARLa om gebruikers en groepen op te halen. In versie 3 is ook een excludelijst toegevoegd. Daarmee kunnen groepen worden uitgesloten die geen nut hebben voor de vergelijking.
+
+Versie 3 is de beste versie van de PoC. De data wordt duidelijker opgehaald en de analyse is beter herhaalbaar. De excludelijst helpt om algemene of technische groepen uit de score te houden.
+
+\section{Antwoord op de onderzoeksvraag}
+
+De onderzoeksvraag was hoe privilege creep binnen RACF technisch kan worden gevonden en geanalyseerd. Het antwoord is dat dit kan door gebruikers als groepssets voor te stellen en die sets met elkaar te vergelijken.
+
+De PoC berekent welke gebruiker het meest lijkt op de onderzochte gebruiker. Daarna toont ze welke groepen verschillen. Zo worden verdachte groepscombinaties zichtbaar.
+
+De PoC lost privilege creep niet automatisch op. Ze helpt om aandachtspunten te vinden. De beslissing blijft bij de RACF beheerder of auditor.
+
+\subsection*{Antwoord op de deelvragen}
+
+Privilege creep in RACF ontstaat vooral door groepen die blijven staan na een vorige functie, tijdelijke taak of uitzondering.
+
+De belangrijkste gegevens voor deze PoC zijn gebruikers, groepen en de koppeling tussen gebruikers en groepen. Resourceprofielen zijn ook nuttig, maar vallen buiten de hoofdscope van deze versie.
+
+De PoC gebruikt een similarity score als objectieve maat. Die score toont hoe sterk twee gebruikers op elkaar lijken. De additional groups tonen daarna welke extra groepen onderzocht moeten worden.
+
+De drie versies tonen dat de aanpak technisch haalbaar is. Vooral versie 3 is geschikt als basis voor verder werk, omdat CARLa de data ophaalt en REXX de analyse uitvoert.
+
+Voor audits helpt de PoC omdat ze concrete vragen oplevert. Een auditor kan bijvoorbeeld vragen waarom een gebruiker een bepaalde extra groep heeft.
+
+\subsection*{Meerwaarde}
+
+De meerwaarde van de PoC is dat ze handmatig vergelijkingswerk vermindert. Zonder hulpmiddel moet een beheerder zelf gebruikers en groepen naast elkaar leggen. Dat kost tijd en is foutgevoelig.
+
+De PoC maakt verschillen sneller zichtbaar. Het rapport toont niet alleen dat een gebruiker opvalt, maar ook welke groepen het verschil maken.
+
+De PoC blijft ook dicht bij z/OS. Ze gebruikt JCL, REXX en CARLa. Daardoor hoeft RACF data niet eerst naar een extern platform te worden gebracht.
+
+De PoC past vooral bij een RBAC-context voor persoonlijke gebruikers. Ze kijkt naar groepen omdat die in zo'n beheerproces de praktische laag zijn waarop toegang vaak wordt toegekend en gecontroleerd. Technische gebruikers en non-personal accounts vallen buiten de scope.
+
+\section{Beperkingen en aanbevelingen}
+
+De PoC heeft duidelijke beperkingen. Ze kijkt vooral naar groepen. Ze toont niet volledig welke resources achter elke groep zitten.
+
+De PoC kent ook de echte functie van een gebruiker niet. Een extra groep kan terecht zijn. Daarom mag het rapport niet gebruikt worden om automatisch rechten te verwijderen.
+
+Ook kan de PoC sommige privilege creep missen. Als veel gebruikers dezelfde overbodige groep hebben, lijkt die groep normaal in de vergelijking.
+
+\subsection*{Aanbevelingen}
+
+Gebruik de PoC op een duidelijke scope. Een analyse per applicatie of afdeling is vaak beter dan een analyse van alle gebruikers tegelijk.
+
+Lees additional groups als vragen, niet als bewezen fouten. Controleer altijd waarom de groep bestaat.
+
+Beheer de excludelijst goed. Een groep mag alleen worden uitgesloten als ze echt geen nut heeft voor de vergelijking.
+
+Herhaal de analyse op vaste momenten. Zo kan men zien of dezelfde extra groepen blijven terugkomen.
+
+\subsection*{Toekomstig werk}
+
+Een volgende versie kan resourceprofielen toevoegen. Dan wordt duidelijker welke toegang achter een groep zit.
+
+Ook een aparte groepsreview blijft nodig. De PoC ziet vooral verschillen tussen gebruikers. Ze ziet niet automatisch dat een groep zelf te breed is geworden na bijvoorbeeld een reorganisatie.
+
+Ook gebruiksdata kan toegevoegd worden. Als een groep al lang niet gebruikt is, kan dat een sterker signaal zijn.
+
+Een derde uitbreiding is betere rapportage. Een CSV of HTML rapport kan nuttig zijn voor auditbesprekingen.
+
+\subsection*{Slot}
+
+Privilege creep verdwijnt niet vanzelf. Rechten groeien mee met functies, projecten en uitzonderingen. Daarom is controle nodig.
+
+Deze bachelorproef toont dat een eenvoudige vergelijking van RACF groepen al nuttige signalen kan geven. De PoC is geen volledige oplossing, maar wel een bruikbaar hulpmiddel om privilege creep beter zichtbaar te maken.
+
+Het belangrijkste inzicht is dat eenvoud hier een voordeel is. De PoC gebruikt gegevens die in RACF beschikbaar zijn. Ze toont duidelijke verschillen. Een beheerder kan het resultaat controleren zonder verborgen model of ingewikkelde berekening.
+
+De aanpak past daarom goed bij een eerste stap in een toegangsreview. Eerst worden opvallende groepsverschillen zichtbaar. Daarna kan de beheerder of auditor de echte reden achter die groepen onderzoeken. Zo blijft de controle praktisch en veilig.

@@ -1,2 +1,337 @@
-\chapter{\IfLanguageName{dutch}{Analyse}{Analyzes}}%
+\chapter[Analyse]{\IfLanguageName{dutch}{Analyse: gebruikers en groepen vergelijken}{Analysis: comparing users and groups}}%
 \label{ch:analyse}
+
+Dit hoofdstuk legt uit hoe de PoC privilege creep probeert te vinden. De PoC kijkt vooral naar RACF groepen. Dat is logisch, want in RACF krijgen gebruikers vaak rechten via groepen. Als een gebruiker groepen heeft die andere gelijkaardige gebruikers niet hebben, kan dat wijzen op extra toegang.
+
+De PoC beslist niet zelf of een groep fout is. Dat blijft werk voor een RACF beheerder of auditor. De PoC toont alleen welke gebruikers opvallen en waarom ze opvallen.
+
+\section{Beschikbare RACF gegevens}
+
+Voor deze analyse zijn drie soorten gegevens nodig:
+
+\begin{itemize}
+	\item de RACF groepen die onderzocht worden;
+	\item de gebruikers die in die groepen zitten;
+	\item alle groepen van die gebruikers.
+\end{itemize}
+
+De eerste versie gebruikt een sequentiele dataset met groepen als startpunt. Latere versies gebruiken CARLa om gebruikers en groepen op te halen. Zo wordt de data minder handmatig verzameld en beter herhaalbaar.
+
+De PoC gebruikt bewust groepslidmaatschappen als analysepunt. Binnen een RBAC-aanpak worden rechten voor persoonlijke gebruikers vaak via groepen beheerd. Daardoor is een vergelijking van groepen een praktische controlelaag. De PoC hoeft dan niet meteen alle resourceprofielen apart te analyseren.
+
+Dat betekent ook dat de PoC vooral geschikt is voor persoonlijke gebruikers. Technische gebruikers en non-personal accounts vallen buiten deze analyse. Zij krijgen rechten vaak via een ander patroon en zijn minder geschikt voor vergelijking met gewone gebruikers.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		node distance=1.4cm,
+		box/.style={draw, rounded corners=2pt, align=center, minimum width=4.2cm, minimum height=0.9cm},
+		inside/.style={draw, rounded corners=2pt, align=center, minimum width=4.2cm, minimum height=0.9cm, fill=black!5},
+		arrow/.style={-{Latex[length=2mm]}, thick}
+	]
+		\node[inside] (personal) {Persoonlijke gebruikers\\in scope};
+		\node[box, below=of personal] (groups) {Groepslidmaatschappen\\worden vergeleken};
+		\node[box, below=of groups] (report) {Rapport met\\additional groups};
+		\node[box, right=2.5cm of groups] (technical) {Technische gebruikers\\buiten scope};
+		\draw[arrow] (personal) -- (groups);
+		\draw[arrow] (groups) -- (report);
+		\draw[arrow, dashed] (technical) -- node[above, align=center]{niet in\\vergelijking} (groups);
+	\end{tikzpicture}
+	\caption[Scope van de PoC]{Scope van de PoC. Persoonlijke gebruikers worden vergeleken op basis van groepen. Technische gebruikers vallen buiten deze vergelijking. Bron: eigen schema.}
+	\label{fig:scope-poc}
+\end{figure}
+
+\section{Detectiecriterium}
+
+De PoC vergelijkt gebruikers met elkaar. Voor elke gebruiker wordt een lijst van groepen gemaakt. Daarna wordt die lijst vergeleken met de lijsten van andere gebruikers.
+
+De score wordt berekend met deze formule:
+
+\[
+similariteit(A,B) = \frac{|groepen(A) \cap groepen(B)|}{|groepen(A) \cup groepen(B)|}
+\]
+
+Een score dicht bij 1 betekent dat twee gebruikers bijna dezelfde groepen hebben. Een score dicht bij 0 betekent dat ze weinig groepen delen.
+
+De PoC zoekt per gebruiker de meest gelijkaardige andere gebruiker. Daarna toont de PoC welke groepen verschillen.
+
+Dit detectiecriterium is de kern van de PoC. Het koppelt de technische verwerking aan de reviewcriteria. Een bruikbaar resultaat moet een score tonen en daarna duidelijk maken welke groepen extra of ontbrekend zijn. Zonder die koppeling zou het rapport alleen cijfers tonen. Met die koppeling kan een beheerder gericht controleren of een additional group nog nodig is.
+
+\section{Additional en missing groups}
+
+Na de vergelijking zijn er twee soorten verschillen:
+
+\begin{itemize}
+	\item \textit{additional groups}: groepen die de onderzochte gebruiker wel heeft, maar de referentiegebruiker niet;
+	\item \textit{missing groups}: groepen die de referentiegebruiker wel heeft, maar de onderzochte gebruiker niet.
+\end{itemize}
+
+Additional groups zijn het belangrijkst voor privilege creep. Ze kunnen tonen dat een gebruiker extra toegang heeft. Missing groups helpen om de vergelijking beter te begrijpen.
+
+Een additional group is niet automatisch fout. De groep kan nodig zijn voor een extra taak. De PoC toont dus een aandachtspunt, geen definitieve fout.
+
+\subsection*{Rapportagebehoefte}
+
+Het rapport moet duidelijk zijn voor beheerders en auditors. Daarom bevat het per gebruiker deze informatie:
+
+\begin{itemize}
+	\item de onderzochte gebruiker;
+	\item de meest gelijkaardige gebruiker;
+	\item de similarity score;
+	\item de additional groups;
+	\item de missing groups.
+\end{itemize}
+
+Zo kan een beheerder zien waarom een gebruiker in het rapport staat. De melding kan altijd teruggekoppeld worden naar concrete RACF groepen.
+
+\subsection*{Afbakening van de analyse}
+
+Deze PoC kijkt vooral naar groepslidmaatschappen. Resourceprofielen en gebruiksdata worden nog niet volledig meegenomen. Daardoor geeft de PoC geen volledig beeld van alle effectieve rechten.
+
+Die beperking is bewust gekozen. Groepen zijn een haalbare eerste stap. Ze tonen vaak al waar toegang historisch gegroeid is.
+
+Een belangrijke beperking is dat de PoC niet in de inhoud van een groep kijkt. Als een groep zelf te veel rechten bevat, wordt dat niet rechtstreeks gevonden. Dat kan gebeuren na reorganisaties. Rollen worden dan samengevoegd in een groep. Later worden de functies weer gescheiden, maar de autorisaties in de groep worden niet goed opgesplitst. De PoC werkt een laag hoger: ze ziet welke gebruikers welke groepen hebben.
+
+\subsection*{Van RACF gegevens naar analysemodel}
+
+RACF bevat veel soorten informatie. Een gebruiker heeft bijvoorbeeld een profiel, een standaardgroep, connecties en soms speciale attributen. Voor deze PoC wordt dat eenvoudiger gemaakt. Een gebruiker wordt voorgesteld als een userid met een lijst van groepen.
+
+\begin{table}[htbp]
+\centering
+\caption[Vertaling van RACF elementen naar het analysemodel]{Vertaling van RACF elementen naar het analysemodel van de Proof of Concept}
+\label{tab:racf-analysemodel}
+\begin{tabular}{|p{4cm}|p{8cm}|}
+\hline
+\textbf{RACF element} & \textbf{Gebruik in de PoC} \\
+\hline
+Gebruiker & Unieke sleutel waarvoor een groepslijst wordt gemaakt. \\
+\hline
+Groep & Waarde waarmee gebruikers worden vergeleken. \\
+\hline
+Connectie tussen gebruiker en groep & Bewijs dat de gebruiker aan de groep gekoppeld is. \\
+\hline
+CARLa output & Invoer voor de REXX verwerking. \\
+\hline
+REXX rapport & Output voor beheerder of auditor. \\
+\hline
+\end{tabular}
+\end{table}
+
+Dit model is beperkt, maar goed te controleren. Een beheerder kan nagaan of de groepen in het rapport echt aan de gebruiker gekoppeld zijn.
+
+\subsection*{Normalisatie van invoergegevens}
+
+Voor de vergelijking moet de invoer eerst worden opgeschoond. Lege regels worden genegeerd. Spaties voor en na waarden worden verwijderd. Dubbele groepen worden maar een keer geteld.
+
+Dit is nodig omdat een groep maar een keer mag meetellen. Als \texttt{FINREAD} twee keer in een extract staat, mag dat de score niet verhogen.
+
+\section{Excludelijst}
+
+In de laatste versie kan de PoC groepen uitsluiten van de vergelijking. Dat is nuttig voor groepen die geen echte betekenis hebben voor de review.
+
+Voorbeelden zijn:
+
+\begin{itemize}
+	\item algemene basisgroepen die bijna iedereen heeft;
+	\item technische groepen zonder relevante rechten;
+	\item groepen voor standaardprovisioning;
+	\item groepen die buiten de audit vallen.
+\end{itemize}
+
+Zo'n groep blijft gewoon bestaan in RACF. Ze wordt alleen niet gebruikt in de score. Daardoor wordt de vergelijking minder vertekend.
+
+De excludelijst moet wel goed worden beheerd. Een groep mag niet worden uitgesloten omdat ze lastig uit te leggen is. De reden moet zijn dat ze geen nuttige informatie geeft voor de vergelijking.
+
+\subsection*{Selectie van de scope}
+
+De PoC hoeft niet alle RACF gebruikers tegelijk te analyseren. Dat is vaak niet nuttig. Een technische account en een gewone eindgebruiker hebben een ander soort profiel.
+
+Daarom moet de scope goed gekozen worden. Een analyse per applicatie, afdeling of type gebruiker geeft meestal betere resultaten dan een te brede analyse.
+
+In versie 1 gebeurt de scope via een dataset met groepen. In versie 2 en 3 gebeurt dit meer via CARLa. Dat maakt de selectie beter herhaalbaar.
+
+\subsection*{Betekenis van de score}
+
+De similarity score is een hulpmiddel. De score zegt hoe sterk twee groepslijsten op elkaar lijken. De score bewijst niet dat een gebruiker dezelfde functie heeft als de referentiegebruiker.
+
+Alle groepen tellen in deze versie even zwaar. Een gevoelige productiegroep telt dus hetzelfde als een minder belangrijke groep. Dat houdt de methode eenvoudig. Een latere versie kan groepen wegen op basis van risico.
+
+\subsection*{Voorbeeld van een vergelijking}
+
+Onderstaande tabel toont een klein voorbeeld.
+
+\begin{table}[htbp]
+\centering
+\caption[Voorbeeld van gebruikers en groepssets]{Voorbeeld van gebruikers en groepssets voor de similarityberekening}
+\label{tab:voorbeeld-gebruikers-groepssets}
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USR001 & PAYROLL, FINREAD, BATCH01, HRVIEW \\
+\hline
+USR002 & PAYROLL, FINREAD, BATCH01 \\
+\hline
+USR003 & DEVTEST, APPLDEV, BATCHDEV \\
+\hline
+\end{tabular}
+\end{table}
+
+\texttt{USR001} en \texttt{USR002} delen drie groepen. Samen hebben ze vier unieke groepen. De score is dus 3/4 of 0,75. Voor \texttt{USR001} is \texttt{HRVIEW} een additional group.
+
+\texttt{USR001} en \texttt{USR003} delen geen groepen. Die vergelijking is dus niet nuttig als referentie.
+
+\section{Interpretatie van resultaten}
+
+Additional groups tonen extra groepen bij een gebruiker. Die groepen kunnen wijzen op privilege creep. Ze kunnen ook terecht zijn. Daarom moet een beheerder altijd controleren waarom de groep bestaat.
+
+Een hoge score met een klein aantal additional groups is vaak duidelijk te lezen. Een lage score met veel verschillen is moeilijker te beoordelen. De score en de groepsverschillen moeten dus samen worden bekeken.
+
+\subsection*{Interpretatie van missing groups}
+
+Missing groups tonen wat de referentiegebruiker wel heeft en de onderzochte gebruiker niet. Ze zijn minder direct belangrijk voor privilege creep. Ze helpen vooral om te zien of de vergelijking logisch is.
+
+Soms kunnen missing groups ook wijzen op een ander probleem, zoals ontbrekende toegang. Dat valt buiten de hoofdscope van deze bachelorproef.
+
+\subsection*{Randgevallen}
+
+Sommige gebruikers hebben maar een groep. Dan is de vergelijking vaak zwak. Andere gebruikers hebben juist zeer veel groepen. Dat kan wijzen op historisch gegroeide toegang.
+
+Ook algemene groepen kunnen de score verstoren. Daarom kan versie 3 zulke groepen uitsluiten via de excludelijst.
+
+Een gebruiker kan ook geen goede match hebben in de dataset. Dan kiest de PoC nog altijd de beste match, maar de score zal laag zijn. De beheerder moet zo'n resultaat voorzichtig lezen.
+
+\subsection*{Verhouding tot least privilege}
+
+Least privilege betekent dat een gebruiker alleen de rechten krijgt die nodig zijn voor zijn taak. De PoC kent die taak niet. Daarom vergelijkt ze gebruikers met elkaar.
+
+Als twee gebruikers bijna dezelfde groepen hebben, maar een van hen heeft extra groepen, dan is dat een vraag voor de review. Zijn die extra groepen nog nodig? Zijn ze goedgekeurd? Horen ze bij de huidige functie?
+
+\subsection*{Kwaliteit van de analyse}
+
+De kwaliteit van de analyse hangt af van drie zaken:
+
+\begin{itemize}
+	\item de data moet volledig zijn;
+	\item de scope moet goed gekozen zijn;
+	\item de beheerder moet de resultaten juist interpreteren.
+\end{itemize}
+
+De PoC is dus een hulpmiddel. Ze vervangt geen RACF kennis en voert geen automatische wijzigingen uit.
+
+\subsection*{Waarom groepen een goed startpunt zijn}
+
+Groepen zijn niet het volledige verhaal van RACF. Toch zijn ze een goed startpunt. In veel RACF omgevingen worden rechten niet rechtstreeks aan elke gebruiker gegeven. Rechten worden vaak aan groepen gekoppeld. Daarna worden gebruikers lid gemaakt van die groepen.
+
+Dat maakt groepen belangrijk voor privilege creep. Als een gebruiker in een oude groep blijft zitten, kan die gebruiker nog altijd rechten erven via die groep. De gebruiker ziet dat misschien niet zelf. De beheerder ziet het ook niet altijd meteen, zeker niet als de gebruiker veel groepen heeft.
+
+Een analyse van groepen geeft dus snel een eerste beeld. De PoC hoeft niet meteen elke dataset of transactie te kennen. Ze kijkt eerst naar de structuur van de toegang. Als die structuur vreemd is, kan later dieper gekeken worden naar de resources achter de groep.
+
+Dit is een praktische keuze. Een volledige resourceanalyse is nuttig, maar ook zwaarder. Ze vraagt meer data en meer interpretatie. De groepsanalyse is kleiner en makkelijker te controleren. Daarom past ze goed bij een eerste PoC.
+
+\subsection*{Waarom vergelijken met andere gebruikers}
+
+De PoC vergelijkt gebruikers met elkaar. Dat is nodig omdat de PoC niet weet wat de juiste functie van een gebruiker is. Er is geen perfecte lijst met rollen en rechten beschikbaar.
+
+Door gebruikers te vergelijken, ontstaat toch een bruikbaar beeld. Als twee gebruikers bijna dezelfde groepen hebben, lijken hun toegangsprofielen op elkaar. Als een van de twee extra groepen heeft, is dat interessant voor een review.
+
+Deze aanpak lijkt op hoe een beheerder vaak manueel werkt. Een beheerder kijkt niet alleen naar een gebruiker apart. Hij vergelijkt ook met collega's of met andere gebruikers in dezelfde applicatie. De PoC automatiseert dat deel.
+
+De vergelijking blijft wel beperkt. Als alle gebruikers in een groep te veel rechten hebben, ziet de PoC dat niet altijd. Dan lijkt de groep normaal. Daarom blijft een review van de groepen zelf ook nodig. Dat kan worden ondervangen door de PoC te combineren met een aparte groepsreview. Daarbij kijkt men naar de rechten die aan een groep gekoppeld zijn en laat men een eigenaar bevestigen of die rechten nog kloppen.
+
+\subsection*{Voorbeeld met een kleine afdeling}
+
+Stel dat er een kleine afdeling is met vier gebruikers. Drie gebruikers werken in payroll. Een vierde gebruiker werkte vroeger ook in HR. Die gebruiker heeft nog een oude HR groep.
+
+\begin{verbatim}
+PAY001: PAYROLL, FINREAD, BATCH01
+PAY002: PAYROLL, FINREAD, BATCH01
+PAY003: PAYROLL, FINREAD, BATCH01
+PAY004: PAYROLL, FINREAD, BATCH01, HRVIEW
+\end{verbatim}
+
+De PoC zal voor \texttt{PAY004} een van de andere payroll gebruikers vinden als beste match. De score is 0,75. De additional group is \texttt{HRVIEW}.
+
+Dit betekent niet automatisch dat \texttt{HRVIEW} fout is. Misschien is \texttt{PAY004} nog back-up voor een HR taak. Maar het rapport toont wel een goede vraag: waarom heeft deze payroll gebruiker nog een HR groep?
+
+Zonder PoC moet een beheerder dit zelf zoeken. Bij vier gebruikers is dat eenvoudig. Bij honderden gebruikers wordt dat moeilijker. Daar helpt de PoC.
+
+\subsection*{Technische gebruikers buiten scope}
+
+Niet elke gebruiker is een gewone eindgebruiker. Sommige gebruikers zijn technisch. Ze worden gebruikt voor batchjobs, applicaties of systeemprocessen. Zulke gebruikers hebben vaak andere rechten en volgen niet altijd hetzelfde groepsmodel.
+
+Voorbeeld:
+
+\begin{verbatim}
+BATCH01: SYSBATCH, PAYBATCH, JOBSUB
+USER01:  PAYROLL, FINREAD, BATCH01
+USER02:  PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+\texttt{BATCH01} lijkt niet op \texttt{USER01} of \texttt{USER02}. De score zal laag zijn. Dat is normaal. Voor deze PoC worden technische gebruikers daarom buiten scope geplaatst.
+
+Dit toont waarom scope belangrijk is. Als technische gebruikers en gewone gebruikers door elkaar staan, kunnen vergelijkingen minder nuttig worden. De PoC hoort gebruikt te worden voor persoonlijke gebruikers binnen een duidelijke applicatie, afdeling of gebruikersgroep.
+
+\subsection*{Voorbeeld met een algemene groep}
+
+Sommige groepen komen bijna overal voor. Een groep zoals \texttt{BASEUSR} kan bijvoorbeeld nodig zijn voor algemene toegang. Als die groep bij iedereen voorkomt, zegt ze weinig over de functie van een gebruiker.
+
+Zonder excludelijst ziet de PoC toch overlap door \texttt{BASEUSR}. Twee gebruikers kunnen daardoor een hogere score krijgen dan logisch is.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: BASEUSR, PAYROLL, FINREAD
+USERB: BASEUSR, HRVIEW, HRUPD
+\end{verbatim}
+
+Met \texttt{BASEUSR} meegeteld delen de gebruikers een groep. Zonder \texttt{BASEUSR} delen ze niets. In dit geval geeft de excludelijst dus een eerlijker resultaat.
+
+De excludelijst moet wel voorzichtig gebruikt worden. Een groep uitsluiten is alleen goed als de groep echt geen nuttige informatie geeft voor de vergelijking.
+
+\subsection*{Welke vragen stelt de beheerder}
+
+Het rapport is bedoeld om vragen te stellen. De belangrijkste vragen zijn:
+
+\begin{itemize}
+	\item Waarom heeft deze gebruiker deze additional group?
+	\item Hoort deze groep bij de huidige functie?
+	\item Is de toegang tijdelijk of permanent?
+	\item Is er een eigenaar die deze toegang kan bevestigen?
+	\item Staat de groep ook bij andere gelijkaardige gebruikers?
+	\item Moet de groep blijven bestaan of kan ze verwijderd worden?
+\end{itemize}
+
+Deze vragen zijn belangrijker dan de score op zichzelf. De score helpt om de vergelijking te begrijpen. De beslissing hangt af van de context.
+
+\subsection*{Wat de score niet zegt}
+
+De similarity score zegt niet alles. Een score van 1 betekent alleen dat twee gebruikers dezelfde groepen hebben binnen de gebruikte data. Het betekent niet dat die groepen allemaal correct zijn.
+
+Een score van 0 betekent dat twee gebruikers geen groepen delen. Dat betekent niet automatisch dat een gebruiker gevaarlijk is. Het kan gewoon betekenen dat de gebruiker een andere functie heeft.
+
+De score moet dus altijd samen met de groepen gelezen worden. Vooral de additional groups zijn belangrijk. Zij tonen welke groepen verder bekeken moeten worden.
+
+\subsection*{Waarom missing groups toch nuttig zijn}
+
+Missing groups zijn niet het hoofdonderwerp van privilege creep. Toch zijn ze nuttig. Ze tonen waarom twee gebruikers niet volledig gelijk zijn.
+
+Stel dat gebruiker A en B bijna hetzelfde zijn. Gebruiker A heeft een extra groep. Gebruiker B heeft ook een groep die A niet heeft. Dan is de vergelijking minder zuiver dan wanneer alleen A een extra groep heeft.
+
+Missing groups helpen dus om de vergelijking eerlijk te lezen. Ze kunnen ook wijzen op ontbrekende toegang, maar dat valt buiten deze bachelorproef.
+
+\subsection*{Wanneer is een resultaat bruikbaar}
+
+Een resultaat is vooral bruikbaar als de referentiegebruiker echt lijkt op de onderzochte gebruiker. Dat ziet men aan de score en aan de groepen.
+
+Een hoge score met een paar additional groups is meestal duidelijk. Een lage score met veel verschillen is moeilijker. Dan is er misschien geen goede match in de dataset.
+
+Daarom moet de beheerder niet elk resultaat op dezelfde manier lezen. Sommige resultaten zijn duidelijk. Andere resultaten vragen eerst controle van de scope.
+
+\subsection*{Waarom automatische verwijdering geen goed idee is}
+
+De PoC verwijdert geen rechten. Dat is belangrijk. Een groep kan extra lijken, maar toch nodig zijn. Als de PoC automatisch groepen zou verwijderen, kan een job falen of kan een gebruiker zijn werk niet doen.
+
+Daarom stopt de PoC bij rapportage. De beheerder bekijkt het rapport. Daarna volgt het normale proces voor wijzigingen in RACF.
+
+Dit maakt de PoC veiliger. Ze kan gebruikt worden zonder dat de RACF configuratie verandert.

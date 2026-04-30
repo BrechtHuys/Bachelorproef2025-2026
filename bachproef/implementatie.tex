@@ -1,2 +1,618 @@
-\chapter{\IfLanguageName{dutch}{Implementatie}{Implementation}}%
+\chapter[Implementatie]{\IfLanguageName{dutch}{Implementatie: JCL, REXX, CARLa en rapportage}{Implementation: JCL, REXX, CARLa and reporting}}%
 \label{ch:implementatie}
+
+Dit hoofdstuk beschrijft hoe de PoC gebouwd is. De PoC bestaat uit JCL, REXX en in latere versies ook CARLa. De drie versies hebben hetzelfde doel: gebruikers vergelijken op basis van hun RACF groepen en daarna een rapport maken.
+
+CARLa is de rapportagetaal van IBM Security zSecure. Met CARLa kan RACF informatie uit een RACF database worden geselecteerd en als rapport worden weggeschreven. JCL en REXX zijn voor veel z/OS beheerders bekend. CARLa is specifieker voor zSecure en wordt daarom in dit hoofdstuk kort toegelicht.
+
+\section{Algemene verwerking}
+
+De verwerking bestaat uit vier stappen:
+
+\begin{enumerate}
+	\item haal de gebruikers of groepen op;
+	\item bouw per gebruiker een lijst van groepen;
+	\item vergelijk de gebruikers met elkaar;
+	\item schrijf het rapport.
+\end{enumerate}
+
+De vergelijking gebruikt geen dubbele groepen. Een gebruiker is lid van een groep of niet. Een groep telt dus maar een keer mee.
+
+\section{Versie 1: JCL met twee REXX scripts}
+
+De eerste versie gebruikt JCL om twee REXX scripts na elkaar te starten. De invoer is een sequentiele dataset met groepen. Het eerste REXX script leest die groepen en haalt de gebruikers op die in die groepen zitten.
+
+Daarna start het tweede REXX script. Dat script haalt alle groepen van de gevonden gebruikers op. Daarna vergelijkt het de gebruikers met elkaar en schrijft het rapport.
+
+Deze versie was vooral bedoeld om de basislogica te testen. Ze toont dat de vergelijking werkt, maar de invoer is nog vrij handmatig.
+
+Technisch gebeurt dit via TSO commando's vanuit REXX. De JCL start REXX via \texttt{IKJEFT01}. REXX gebruikt \texttt{OUTTRAP} om de output van een RACF commando op te vangen. Daarna worden regels met \texttt{GROUP=} uit de output gelezen en omgezet naar groepslidmaatschappen.
+
+\begin{listing}[htbp]
+\begin{minted}{text}
+//STEP1    EXEC PGM=IKJEFT01
+//SYSEXEC  DD DISP=SHR,DSN=HUYSBRE.BP.REXX
+//INPUT    DD DISP=SHR,DSN=HUYSBRE.BP.TEST.CONF
+//SYSTSIN  DD *
+  %UDTEST4
+/*
+//STEP2    EXEC PGM=IKJEFT01
+//SYSEXEC  DD DISP=SHR,DSN=HUYSBRE.BP.REXX
+//SYSTSIN  DD *
+  %UDLUG1TT
+/*
+\end{minted}
+\caption[Versie 1: JCL start twee REXX scripts]{Fragment uit versie 1: de JCL start twee REXX scripts na elkaar. Bron: eigen PoC-scriptbestand \texttt{VERSIE\_1.txt}.}
+\label{lst:v1-jcl}
+\end{listing}
+
+\section{Versie 2: gebruikers ophalen met CARLa}
+
+In versie 2 wordt CARLa gebruikt om gebruikers op te halen. CARLa is beter geschikt om RACF informatie op te vragen dan losse REXX verwerking.
+
+REXX blijft in deze versie verantwoordelijk voor de analyse. Het script leest de gebruikers, haalt de groepsinformatie op en maakt het rapport. Het voordeel is dat de gebruikersselectie duidelijker wordt.
+
+In deze versie haalt CARLa dus nog niet alle groepen per gebruiker op. CARLa maakt vooral de gebruikerslijst. Daarna gebruikt REXX opnieuw het \texttt{LU}-commando om de groepen van elke gebruiker te lezen. De winst zit vooral in de selectie van gebruikers: die selectie staat in een CARLa query en is daardoor beter herhaalbaar.
+
+\begin{listing}[htbp]
+\begin{minted}{text}
+CALL OUTTRAP "racfout."
+"LU" user
+CALL OUTTRAP "OFF"
+
+DO j = 12 TO racfout.0 - 4
+   line = STRIP(racfout.j)
+   IF LEFT(line,6) = "GROUP=" THEN DO
+      PARSE VAR line "GROUP=" grp .
+      grp = STRIP(grp)
+      usergroups.user.grp = 1
+   END
+END
+\end{minted}
+\caption[REXX leest groepen uit LU-output]{Fragment uit de REXX verwerking: de output van \texttt{LU} wordt opgevangen en regels met \texttt{GROUP=} worden verwerkt. Bron: eigen PoC-scriptbestanden \texttt{VERSIE\_1.txt} en \texttt{VERSIE\_2.txt}.}
+\label{lst:rexx-lu-groups}
+\end{listing}
+
+\section{Versie 3: gebruikers en groepen ophalen met CARLa}
+
+Versie 3 gebruikt CARLa voor gebruikers en groepen. REXX hoeft daardoor minder ruwe RACF output te verwerken. CARLa levert de data aan. REXX vergelijkt de gebruikers en maakt het rapport.
+
+Deze versie is de beste versie van de PoC. Ze is beter herhaalbaar en past beter bij een RACF auditproces. In deze versie is ook een excludelijst toegevoegd. Daarmee kunnen groepen worden genegeerd die geen nut hebben voor de vergelijking.
+
+In de gebruikte CARLa output staat per gebruiker de volledige lijst met connectgroepen als tekstregel. De gebruiker staat aan het begin van de regel. De groepen volgen erachter. Als de regel te lang wordt, kan de output doorlopen op een vervolgregel. REXX leest daarom eerst de gebruiker en verwerkt daarna alle groepen op die regel en eventuele vervolgregels.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		node distance=1.5cm,
+		box/.style={draw, rounded corners=2pt, align=center, minimum width=3.4cm, minimum height=0.9cm},
+		arrow/.style={-{Latex[length=2mm]}, thick}
+	]
+		\node[box] (racf) {RACF data};
+		\node[box, right=of racf] (carla) {CARLa\\selectie};
+		\node[box, right=of carla] (dataset) {Dataset met\\users en groepen};
+		\node[box, below=of dataset] (rexx) {REXX\\vergelijking};
+		\node[box, left=of rexx] (exclude) {Excludelijst};
+		\node[box, left=of exclude] (report) {Rapport};
+		\draw[arrow] (racf) -- (carla);
+		\draw[arrow] (carla) -- (dataset);
+		\draw[arrow] (dataset) -- (rexx);
+		\draw[arrow] (exclude) -- (rexx);
+		\draw[arrow] (rexx) -- (report);
+	\end{tikzpicture}
+	\caption[Verwerking in versie 3]{Verwerking in versie 3. CARLa haalt de RACF data op. REXX past de excludelijst toe, vergelijkt gebruikers en schrijft het rapport. Bron: eigen schema.}
+	\label{fig:verwerking-versie-3}
+\end{figure}
+
+\begin{listing}[htbp]
+\begin{minted}{text}
+n n=baseu1 segment=BASE required allowrestrict
+ s s=base c=user  DFLTGRP=(UI*,UN*)
+ sortlist ,
+ cggrpct(nd),
+ cggrpnm(nd),
+ key(8) cggrpnm(hor,wordwrap,500)
+\end{minted}
+\caption[Versie 3: CARLa haalt connectgroepen op]{Fragment uit versie 3: CARLa schrijft per gebruiker de connectgroepen weg met \texttt{cggrpnm}. Bron: eigen PoC-scriptbestand \texttt{VERSIE\_3.txt}.}
+\label{lst:v3-carla-cggrpnm}
+\end{listing}
+
+\subsection*{Rol van JCL}
+
+JCL stuurt de uitvoering op z/OS. Dat past bij de mainframeomgeving. Een analyse kan zo als batchjob draaien en een rapport wegschrijven naar een dataset.
+
+Een vereenvoudigde structuur van versie 1 ziet er zo uit:
+
+\begin{verbatim}
+//STEP01   EXEC PGM=IKJEFT01
+//SYSTSIN  DD *
+  EX 'HLQ.REXX(GETUSERS)'
+/*
+//GROUPIN  DD DSN=HLQ.INPUT.GROUPS,DISP=SHR
+//USEROUT  DD DSN=HLQ.WORK.USERS,DISP=...
+
+//STEP02   EXEC PGM=IKJEFT01
+//SYSTSIN  DD *
+  EX 'HLQ.REXX(COMPARE)'
+/*
+//USERIN   DD DSN=HLQ.WORK.USERS,DISP=SHR
+//REPORT   DD DSN=HLQ.REPORT.PRIVCREEP,DISP=...
+\end{verbatim}
+
+De eerste stap maakt een gebruikerslijst. De tweede stap leest die lijst en maakt het rapport.
+
+\subsection*{Datasetgebruik}
+
+De PoC gebruikt datasets om gegevens tussen stappen door te geven. In versie 1 bevat de invoerdataset de groepen die onderzocht worden.
+
+Een eenvoudig voorbeeld:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+HRVIEW
+\end{verbatim}
+
+Deze invoer is makkelijk aan te passen. Dat is handig voor testen. Het nadeel is dat de beheerder de dataset goed moet samenstellen.
+
+\subsection*{REXX als verwerkingstaal}
+
+REXX wordt gebruikt omdat het goed past bij z/OS en tekstverwerking. Het script leest regels, splitst waarden op, bewaart groepen per gebruiker en schrijft het rapport.
+
+De logica kan eenvoudig worden samengevat:
+
+\begin{verbatim}
+voor elke gebruiker:
+    lees alle groepen
+    bewaar elke groep een keer
+
+voor elke gebruiker A:
+    zoek de meest gelijkaardige gebruiker B
+    bereken de score
+    bepaal additional groups
+    bepaal missing groups
+    schrijf de gebruiker naar het rapport
+\end{verbatim}
+
+\subsection*{Interne datastructuren}
+
+In REXX kunnen stems gebruikt worden om lijsten bij te houden. Voor deze PoC wordt per gebruiker een lijst van groepen bewaard.
+
+Voorbeeld:
+
+\begin{verbatim}
+groups.USER001.1 = PAYROLL
+groups.USER001.2 = FINREAD
+groups.USER001.3 = BATCH01
+groups.USER001.0 = 3
+\end{verbatim}
+
+Het script moet controleren dat een groep niet dubbel wordt toegevoegd. Anders kan de score fout worden.
+
+Ook de lijst van gebruikers wordt apart bijgehouden. Zo kan het script elke gebruiker met elke andere gebruiker vergelijken.
+
+\subsection*{CARLa in versie 2}
+
+In versie 2 haalt CARLa de gebruikers op. Een eenvoudige voorstelling:
+
+\begin{verbatim}
+newlist type=racf
+  select class=user
+  sortlist key
+\end{verbatim}
+
+In de echte versie wordt via zSecure een RACF database toegewezen. Daarna selecteert CARLa gebruikers uit de BASE segmentinformatie. De output bevat vooral de userids. REXX leest die lijst via de \texttt{DUMPIN} DD en haalt daarna zelf de groepen op met \texttt{LU}.
+
+De echte CARLa query hangt af van de omgeving. Het principe blijft hetzelfde: CARLa selecteert de gebruikers, REXX verwerkt ze verder.
+
+\subsection*{CARLa in versie 3}
+
+In versie 3 haalt CARLa ook de groepen op. De gebruikte query schrijft onder andere \texttt{key(8)} en \texttt{cggrpnm(hor,wordwrap,500)} weg. Daardoor staat eerst de gebruiker in de output en daarna de groepen van die gebruiker.
+
+\begin{verbatim}
+USER001 PAYROLL FINREAD BATCH01
+USER002 PAYROLL FINREAD
+USER003 DEVTEST APPLDEV BATCHDEV
+\end{verbatim}
+
+Elke regel betekent dus niet een aparte gebruiker-groep koppeling. Een regel bevat een gebruiker met meerdere groepen. Als de lijst niet op een regel past, volgt een vervolgregel. In de REXX code wordt een nieuwe gebruiker herkend wanneer de regel niet met een spatie begint. Een regel die wel met een spatie begint, wordt als vervolg van dezelfde gebruiker gelezen.
+
+\subsection*{Excludelijst voor groepen}
+
+Versie 3 heeft ook een excludelijst. Die lijst bevat groepen die niet meetellen in de vergelijking.
+
+Voorbeeld:
+
+\begin{verbatim}
+BASEUSR
+DEFAULT
+NORESP
+TECHGRP
+\end{verbatim}
+
+Tijdens het lezen van de groepen controleert REXX of de groep in de excludelijst staat. Als dat zo is, wordt de groep overgeslagen.
+
+\begin{verbatim}
+voor elke gebruiker-groep regel:
+    lees gebruiker en groep
+
+    als groep in excludelijst staat:
+        sla de groep over
+    anders:
+        voeg de groep toe aan de gebruiker
+\end{verbatim}
+
+Dit maakt de vergelijking zuiverder. Een algemene groep die iedereen heeft, verhoogt anders de score zonder dat dit iets zegt over de functie van de gebruiker.
+
+De excludelijst moet wel verklaarbaar zijn. Een groep mag alleen worden uitgesloten als ze echt geen nuttige informatie geeft voor de vergelijking.
+
+In de gebruikte versie gebeurt een deel van die filtering al in de REXX code. Groepen die beginnen met \texttt{UI} of \texttt{UN} worden overgeslagen. Dat zijn groepen die in deze context geen nuttige waarde hebben voor de vergelijking. Het principe kan later uitgebreid worden naar een aparte beheerde excludelijst.
+
+\subsection*{Scheiding tussen ophalen en analyseren}
+
+In versie 3 is er een duidelijke scheiding. CARLa haalt de data op. REXX analyseert de data.
+
+Dat maakt de PoC makkelijker te onderhouden. Als de selectie van gebruikers verandert, kan de CARLa query aangepast worden. De REXX vergelijking hoeft dan niet volledig te veranderen.
+
+\subsection*{Foutafhandeling}
+
+De PoC moet enkele eenvoudige fouten opvangen. Een leeg gebruikersbestand mag niet zomaar een leeg rapport opleveren zonder melding. Ook gebruikers zonder groepen moeten zichtbaar blijven.
+
+Regels met een fout formaat moeten worden overgeslagen of gemeld. Zo kan de beheerder de invoer controleren.
+
+\section{Rapportage}
+
+Het rapport is tekstueel. Het moet snel leesbaar zijn voor een RACF beheerder of auditor.
+
+Voorbeeld:
+
+\begin{verbatim}
+USER:              USER001
+MOST SIMILAR USER: USER002
+SIMILARITY SCORE:  0.75
+ADDITIONAL GROUPS: HRVIEW
+MISSING GROUPS:    -
+
+USER:              USER004
+MOST SIMILAR USER: USER005
+SIMILARITY SCORE:  0.67
+ADDITIONAL GROUPS: PRODADM, TEMPACC
+MISSING GROUPS:    READONLY
+\end{verbatim}
+
+De huidige PoC voegt geen automatische prioriteit toe. De beheerder leest de score en de groepsverschillen en beslist zelf wat verder onderzocht wordt.
+
+\subsection*{Performantie}
+
+De PoC vergelijkt elke gebruiker met elke andere gebruiker. Bij een kleine dataset is dat geen probleem. Bij een grote dataset kan dit traag worden.
+
+Een latere versie kan dit verbeteren door gebruikers eerst op te delen per applicatie of afdeling. Dan worden alleen gebruikers vergeleken die inhoudelijk bij elkaar passen.
+
+\subsection*{Beheerbaarheid}
+
+De scripts moeten begrijpelijk blijven. Datasetnamen en instellingen horen op een duidelijke plaats te staan. De vergelijkingslogica moet niet telkens aangepast worden voor een andere inputdataset.
+
+Een duidelijke opbouw is:
+
+\begin{itemize}
+	\item configuratie en datasetnamen;
+	\item lezen van invoer;
+	\item opbouwen van groepslijsten;
+	\item berekenen van scores;
+	\item schrijven van het rapport.
+\end{itemize}
+
+\subsection*{Controleerbaarheid}
+
+De PoC moet kunnen tonen hoe het rapport tot stand kwam. Daarom is het nuttig om ook aantallen te loggen.
+
+Voorbeeld:
+
+\begin{verbatim}
+Aantal gebruikers gelezen: 125
+Aantal gebruiker-groep regels gelezen: 842
+Aantal gebruikers zonder groepen: 6
+\end{verbatim}
+
+Als deze aantallen vreemd zijn, kan de beheerder eerst de invoer controleren.
+
+\subsection*{Geen automatische aanpassingen}
+
+De PoC past RACF niet aan. Ze verwijdert geen gebruiker uit een groep. Ze geeft alleen een rapport.
+
+Dat is bewust zo. Rechten verwijderen kan gevolgen hebben voor productie. Daarom moet elke wijziging via het normale beheerproces gebeuren.
+
+Bovendien bestaat er een bovenliggend RBAC-proces voor rechtenwijzigingen. Een wijziging rechtstreeks in RACF, buiten dat proces om, kan later opnieuw worden teruggedraaid of overschreven door het normale beheerproces. De PoC moet daarom input leveren voor dat proces, niet zelf de wijziging uitvoeren.
+
+\subsection*{Versies bijhouden}
+
+De drie versies hebben elk een duidelijk doel. Versie 1 test de basislogica. Versie 2 gebruikt CARLa voor gebruikers. Versie 3 gebruikt CARLa voor gebruikers en groepen en heeft een excludelijst.
+
+Door die versies apart te beschrijven, is duidelijk hoe de PoC gegroeid is.
+
+\subsection*{Stap voor stap in versie 1}
+
+Versie 1 is de eenvoudigste versie. Ze bestaat uit twee REXX scripts. De JCL zorgt dat die scripts in de juiste volgorde draaien.
+
+De eerste stap leest een lijst met groepen. Die lijst staat in een sequentiele dataset. Elke regel bevat een groepsnaam. Het script zoekt daarna welke gebruikers bij die groepen horen.
+
+De tweede stap gebruikt de gevonden gebruikers. Voor elke gebruiker zoekt het script alle groepen. Daarna worden de gebruikers met elkaar vergeleken.
+
+In de REXX verwerking wordt RACF output als tekst gelezen. Het script vangt de output van het \texttt{LU}-commando op met \texttt{OUTTRAP}. Daarna filtert het kopregels, lege regels en regels die geen groepsinformatie bevatten. Alleen regels met \texttt{GROUP=} worden gebruikt om de groepsset van de gebruiker op te bouwen.
+
+De stappen zijn dus:
+
+\begin{enumerate}
+	\item lees groep uit de inputdataset;
+	\item zoek gebruikers voor die groep;
+	\item schrijf gebruikers naar een werkdataset;
+	\item lees gebruikers uit de werkdataset;
+	\item zoek groepen per gebruiker;
+	\item vergelijk gebruikers;
+	\item schrijf het rapport.
+\end{enumerate}
+
+Deze versie is goed om de logica te testen. Het nadeel is dat de startdataset met groepen juist moet zijn. Als een groep ontbreekt, kunnen ook gebruikers ontbreken.
+
+\subsection*{Voorbeeld van input voor versie 1}
+
+De input van versie 1 kan heel eenvoudig zijn:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+HRVIEW
+PRODADM
+\end{verbatim}
+
+Deze input betekent dat de PoC start vanuit deze groepen. Het eerste script zoekt gebruikers die in deze groepen zitten.
+
+Als \texttt{PRODADM} een gevoelige groep is, kan het nuttig zijn om die op te nemen. Als \texttt{BASEUSR} een algemene groep is, kan het juist minder nuttig zijn om die als startpunt te gebruiken.
+
+De beheerder moet dus nadenken over de input. De PoC kan alleen werken met de gegevens die ze krijgt.
+
+\subsection*{Voorbeeld van een werkdataset}
+
+Na de eerste stap kan een werkdataset met gebruikers ontstaan:
+
+\begin{verbatim}
+PAY001
+PAY002
+PAY003
+PAY004
+HR001
+\end{verbatim}
+
+Deze lijst wordt gebruikt door het tweede script. Het tweede script haalt de groepen van deze gebruikers op.
+
+Het is handig om deze werkdataset te bewaren tijdens het testen. Als het eindrapport vreemd lijkt, kan men eerst controleren welke gebruikers zijn meegenomen.
+
+\subsection*{Stap voor stap in versie 2}
+
+Versie 2 gebruikt CARLa voor de gebruikersselectie. Dat maakt de eerste stap duidelijker.
+
+De stappen zijn:
+
+\begin{enumerate}
+	\item CARLa haalt de gebruikers op;
+	\item REXX leest de gebruikerslijst;
+	\item REXX haalt groepen op per gebruiker;
+	\item REXX vergelijkt de gebruikers;
+	\item REXX schrijft het rapport.
+\end{enumerate}
+
+Het voordeel is dat CARLa beter past bij RACF rapportage. De selectie is makkelijker te herhalen. De REXX code hoeft minder selectie zelf te doen. De groepsopvraging blijft wel nog in REXX zitten. Dat is het belangrijkste verschil met versie 3.
+
+\subsection*{Stap voor stap in versie 3}
+
+Versie 3 gebruikt CARLa voor gebruikers en groepen. REXX krijgt dus al een eenvoudiger invoerbestand.
+
+De stappen zijn:
+
+\begin{enumerate}
+	\item CARLa haalt gebruikers op;
+	\item CARLa haalt groepen van die gebruikers op;
+	\item REXX leest per gebruiker de lijst met groepen;
+	\item REXX past de excludelijst toe;
+	\item REXX bouwt per gebruiker een groepslijst;
+	\item REXX vergelijkt gebruikers;
+	\item REXX schrijft het rapport.
+\end{enumerate}
+
+Deze versie is het duidelijkst. CARLa doet het ophalen van RACF informatie. REXX doet de vergelijking.
+
+\begin{listing}[htbp]
+\begin{minted}{text}
+firstChar = SUBSTR(in.i,1,1)
+
+IF firstChar <> " " THEN DO
+   usercount = usercount + 1
+   PARSE VAR line user rest
+   curuser = user
+   users.usercount = user
+   usergroups.user.0 = 0
+END
+ELSE DO
+   rest = line
+END
+\end{minted}
+\caption[Versie 3: REXX herkent nieuwe gebruikers]{Fragment uit versie 3: REXX herkent een nieuwe gebruiker aan een regel die niet met een spatie begint. Een ingesprongen regel wordt als vervolg van dezelfde gebruiker gelezen. Bron: eigen PoC-scriptbestand \texttt{VERSIE\_3.txt}.}
+\label{lst:v3-rexx-continuation}
+\end{listing}
+
+\subsection*{Voorbeeld van CARLa input in versie 3}
+
+In versie 3 kan de input er zo uitzien:
+
+\begin{verbatim}
+PAY001 PAYROLL FINREAD BATCH01
+PAY002 PAYROLL FINREAD BATCH01
+PAY004 PAYROLL FINREAD BATCH01 HRVIEW
+\end{verbatim}
+
+REXX leest elke regel. De eerste waarde is de gebruiker. De waarden daarna zijn groepen. Bij een vervolgregel hoort de regel nog bij dezelfde gebruiker.
+
+Daarna ontstaat intern dit beeld:
+
+\begin{verbatim}
+PAY001: PAYROLL, FINREAD, BATCH01
+PAY002: PAYROLL, FINREAD, BATCH01
+PAY004: PAYROLL, FINREAD, BATCH01, HRVIEW
+\end{verbatim}
+
+De vergelijking kan daarna starten.
+
+\subsection*{Voorbeeld met excludelijst}
+
+Stel dat de input deze regels bevat:
+
+\begin{verbatim}
+PAY001 BASEUSR PAYROLL FINREAD
+PAY002 BASEUSR PAYROLL FINREAD
+\end{verbatim}
+
+Als \texttt{BASEUSR} in de excludelijst staat, wordt die groep overgeslagen.
+
+Dan blijven deze groepen over:
+
+\begin{verbatim}
+PAY001: PAYROLL, FINREAD
+PAY002: PAYROLL, FINREAD
+\end{verbatim}
+
+De vergelijking gaat dan alleen over groepen die nuttig zijn voor de review.
+
+\subsection*{Hoe de overlap wordt berekend}
+
+De overlap is het aantal groepen dat twee gebruikers delen.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, BATCH01, HRVIEW
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+De gedeelde groepen zijn:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+\end{verbatim}
+
+De overlap is dus 3.
+
+De unieke groepen samen zijn:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+HRVIEW
+\end{verbatim}
+
+Dat zijn 4 groepen. De score is 3 gedeeld door 4. Dat is 0,75.
+
+\subsection*{Hoe additional groups worden bepaald}
+
+Additional groups zijn groepen die alleen bij de onderzochte gebruiker staan.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, BATCH01, HRVIEW
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+Voor \texttt{USERA} is \texttt{HRVIEW} een additional group. Voor \texttt{USERB} is er geen additional group in deze vergelijking.
+
+Het rapport moet dit duidelijk tonen. De beheerder kan dan vragen waarom \texttt{USERA} \texttt{HRVIEW} heeft.
+
+\subsection*{Hoe missing groups worden bepaald}
+
+Missing groups zijn groepen die de referentiegebruiker wel heeft, maar de onderzochte gebruiker niet.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+Voor \texttt{USERA} is \texttt{BATCH01} een missing group. Dit betekent niet automatisch dat \texttt{USERA} te weinig rechten heeft. Het toont alleen het verschil met de referentiegebruiker.
+
+\subsection*{Rapport per gebruiker}
+
+Het rapport wordt per gebruiker opgebouwd. Voor elke gebruiker zoekt de PoC eerst de beste match. Daarna worden de verschillen berekend.
+
+Een rapportblok kan er zo uitzien:
+
+\begin{verbatim}
+USER:              PAY004
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  0.75
+ADDITIONAL GROUPS: HRVIEW
+MISSING GROUPS:    -
+\end{verbatim}
+
+Dit blok is kort, maar bevat genoeg informatie. De beheerder ziet meteen dat \texttt{PAY004} lijkt op \texttt{PAY001}, maar een extra groep heeft.
+
+\subsection*{Controle tijdens uitvoering}
+
+Het is nuttig dat de job enkele aantallen toont. Bijvoorbeeld:
+
+\begin{verbatim}
+Aantal gebruikers gelezen: 5
+Aantal groepen gelezen: 18
+Aantal uitgesloten groepen: 4
+Aantal gebruikers in rapport: 5
+\end{verbatim}
+
+Deze aantallen helpen bij controle. Als er plots 0 gebruikers gelezen worden, is er waarschijnlijk een probleem met de input.
+
+\subsection*{Waarom tekstoutput voldoende is}
+
+De PoC gebruikt tekstoutput. Dat is eenvoudig, maar past goed bij z/OS. Beheerders kunnen het rapport lezen als dataset. Ze kunnen het ook bewaren bij auditdocumentatie.
+
+Een grafische interface is niet nodig voor deze PoC. Het doel is eerst om de analyse te laten werken. Later kan de output altijd nog omgezet worden naar CSV of HTML.
+
+\subsection*{Beschikbaar stellen aan doelgroepen}
+
+De PoC kan het best als gecontroleerde batchjob beschikbaar worden gesteld. RACF beheerders kunnen de job uitvoeren voor een afgesproken scope, bijvoorbeeld een applicatie of afdeling. Auditors kunnen het rapport gebruiken als bewijsstuk of als startpunt voor vragen.
+
+Een praktische vorm is een kleine set datasets:
+
+\begin{itemize}
+	\item een JCL member om de analyse te starten;
+	\item een CARLa member voor de selectie;
+	\item een REXX member voor de vergelijking;
+	\item een dataset met uitgesloten groepen;
+	\item een outputdataset met het rapport.
+\end{itemize}
+
+Zo blijft de oplossing dicht bij de bestaande z/OS werkwijze. De uitvoering kan beperkt worden tot bevoegde beheerders. Het rapport kan daarna gedeeld worden met audit of met de eigenaar van de applicatie.
+
+\subsection*{Beperkingen in de implementatie}
+
+De implementatie is bewust eenvoudig. Ze is bedoeld als Proof of Concept. Dat betekent dat niet alle mogelijke fouten of uitzonderingen volledig zijn uitgewerkt.
+
+Belangrijke beperkingen zijn:
+
+\begin{itemize}
+	\item de PoC werkt met de data die aangeleverd wordt;
+	\item de PoC kent de echte functie van de gebruiker niet;
+	\item de PoC weegt groepen niet op risico;
+	\item de PoC verwijdert geen rechten.
+\end{itemize}
+
+Deze beperkingen zijn aanvaardbaar voor een eerste versie. Ze maken wel duidelijk waar verder werk nodig is.
+
+\subsection*{Waarom versie 3 de beste basis is}
+
+Versie 3 is de beste basis omdat de taken duidelijk verdeeld zijn. CARLa haalt de RACF data op uit zSecure en schrijft per gebruiker de connectgroepen weg. REXX hoeft daardoor geen ruwe \texttt{LU}-output meer te interpreteren. REXX leest de CARLa output, past de excludelijst toe, bouwt de groepssets en berekent de score.
+
+Ook de excludelijst maakt versie 3 beter. Algemene groepen kunnen uit de vergelijking worden gehaald. Daardoor wordt het rapport bruikbaarder.
+
+Als de PoC later verder ontwikkeld wordt, is versie 3 dus het beste startpunt.

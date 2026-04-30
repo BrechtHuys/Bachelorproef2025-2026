@@ -1,17 +1,10 @@
+
 %===============================================================================
 % LaTeX sjabloon voor de bachelorproef toegepaste informatica aan HOGENT
 % Meer info op https://github.com/HoGentTIN/latex-hogent-report
 %===============================================================================
 
 \documentclass[dutch,dit,thesis]{hogentreport}
-
-% TODO:
-% - If necessary, replace the option `dit`' with your own department!
-%   Valid entries are dbo, dbt, dgz, dit, dlo, dog, dsa, soa
-% - If you write your thesis in English (remark: only possible after getting
-%   explicit approval!), remove the option "dutch," or replace with "english".
-
-\usepackage{lipsum} % For blind text, can be removed after adding actual content
 
 %% Pictures to include in the text can be put in the graphics/ folder
 \graphicspath{{../graphics/}}
@@ -46,16 +39,17 @@
 }
 
 % Other packages not already included can be imported here
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 
 %%---------- Document metadata -------------------------------------------------
-% TODO: Replace this with your own information
 \author{Brecht Huys}
 \supervisor{Leendert Blondeel }
 \cosupervisor{Jeroen Souverijn}
 \title[]%
     {Detectie van Privilege Creep in RACF via Analyse
-    	van Gebruikers-, Groeps- en Resourceprofielen op IBM
-    	z/OS.}
+    	van Gebruikersprofielen op IBM
+    	z/OS}
 \academicyear{\advance\year by -1 \the\year--\advance\year by 1 \the\year}
 \examperiod{1}
 \degreesought{\IfLanguageName{dutch}{Professionele bachelor in de toegepaste informatica}{Bachelor of applied computer science}}
@@ -101,6 +95,7 @@
 
 %---------- Inhoud, lijst figuren, ... -----------------------------------------
 
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 % In a list of figures, the complete caption will be included. To prevent this,
@@ -153,21 +148,16 @@
 
 \appendix
 
+\input{bijlage-poc}
+
 \chapter{Onderzoeksvoorstel}
 
 Het onderwerp van deze bachelorproef is gebaseerd op een onderzoeksvoorstel dat vooraf werd beoordeeld door de promotor. Dat voorstel is opgenomen in deze bijlage.
-
-%% TODO: 
-%\section*{Samenvatting}
-
-% Kopieer en plak hier de samenvatting (abstract) van je onderzoeksvoorstel.
 
 % Verwijzing naar het bestand met de inhoud van het onderzoeksvoorstel
 \input{../voorstel/voorstel-inhoud}
 
 %%---------- Andere bijlagen --------------------------------------------------
-% TODO: Voeg hier eventuele andere bijlagen toe. Bv. als je deze BP voor de
-% tweede keer indient, een overzicht van de verbeteringen t.o.v. het origineel.
 %\input{...}
 
 %%---------- Backmatter, referentielijst ---------------------------------------

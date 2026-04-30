@@ -2,96 +2,107 @@
 %% Inleiding
 %%=============================================================================
 
-\chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
+\chapter[Inleiding]{\IfLanguageName{dutch}{Inleiding: context, probleem en doel}{Introduction: context, problem and goal}}%
 \label{ch:inleiding}
-IBM z/OS mainframes blijven een groot deel van de infrastructuur in financiële instellingen, grote industriële bedrijven en overheidsinstanties ondersteunen. Deze systemen verwerken transacties die niet alleen cruciaal zijn voor de dagelijkse operaties, maar ook beladen zijn met gevoelige informatie, en vereisen bijna perfecte beschikbaarheid en onwrikbare integriteit. Binnen een dergelijke omgeving is het beheer van toegangsrechten verre van triviaal. Een verkeerd toegewezen privilege, te veel rechten toegekend aan de verkeerde persoon, of aanhoudende toegang die verwijderd had moeten worden, kan zich naar buiten toe verspreiden en zowel de operationele continuïteit als de naleving beïnvloeden.
-Op z/OS wordt toegangscontrole grotendeels beheerd door RACF (Resource Access Control Facility). RACF houdt gebruikersprofielen, groepslidmaatschappen en machtigingen voor datasets en andere systeembronnen bij. Toch kan wat op papier ordelijk lijkt, in de praktijk snel verwarrend worden. De fijnmazige autorisatiestructuren van het systeem, in combinatie met decennia aan historische configuraties, resulteren in omgevingen van aanzienlijke complexiteit. In organisaties waar de dienstverbanden lang zijn en de rollen evolueren, kunnen toegangsrechten in de loop van de tijd stilletjes accumuleren, zelden worden deze teruggebracht tot wat functioneel nodig is.
 
-Deze langzame accumilatie van privileges, privilege creep genoemd, is niet onmiddellijk duidelijk. De aanwezigheid ervan verhoogt maar toch subtiel de kans op misbruik, onbedoelde fouten of schendingen van beveiligingsnormen. De uitdaging is bijzonder acuut bij mainframes: machtigingen worden vaak geërfd via gelaagde groepshiërarchieën of generieke profielen, waardoor het moeilijk, zo niet onmogelijk, is om handmatig te bepalen welke rechten belangrijk blijven voor de huidige taken.
+IBM z/OS mainframes worden nog altijd veel gebruikt in banken, overheden, verzekeringen en grote bedrijven. Ze verwerken vaak belangrijke gegevens en transacties. Daarom moet de toegang tot zulke systemen goed beheerd worden.
 
-De huidige bachelorproef situeert zich volledig binnen het domein van mainframebeveiliging en identiteits- en toegangsbeheer. De focus ligt op technische detectie: het identificeren van privilege creep binnen RACF-configuraties door met analyse in plaats van beleidsvoorschriften. Het doel is om een reproduceerbare methode te ontwikkelen die in staat is om overmatige of inactieve machtigingen te identificeren op basis van alleen RACF-gegevens.
+Op z/OS wordt toegangsbeheer vaak geregeld met RACF. RACF beheert gebruikers, groepen en rechten op resources. Een gebruiker kan rechten rechtstreeks krijgen, maar ook via groepen. Dat groepsmodel is handig, maar het kan ook onduidelijk worden wanneer een omgeving lang bestaat.
 
-Het is vermeldenswaard dat de reikwijdte opzettelijk klein is. Alleen IBM z/OS-omgevingen die RACF als het eerste beveiligingsmechanisme gebruiken, worden in overweging genomen. Realtime monitoring, geautomatiseerde herstelmaatregelen en integratie met bredere IAM-platforms zijn opzettelijk uitgesloten. De nadruk ligt uitsluitend op detectie en rapportage door, met zorgvuldige analyse van geëxporteerde gegevens.
+Privilege creep betekent dat een gebruiker meer rechten houdt dan nodig is. Dat gebeurt vaak stap voor stap. Iemand krijgt toegang voor een project, een tijdelijke taak of een vorige functie. Later verandert de taak, maar de oude groep blijft staan. Na een tijd weet niemand nog zeker waarom de gebruiker die groep heeft.
 
-Methodologisch gezien mengt de studie literatuuronderzoek met praktische technische eisen en culmineert dit in een Proof of Concept (PoC). Deze combinatie maakt zowel een theoretische kaderstelling van privilege creep  als een praktische verkenning van de manifestaties ervan in een gecontroleerde omgeving, wat inzichten biedt die, indien voorzichtig geïnterpreteerd, grotere beveiligingspraktijken kunnen informeren zonder de grenzen van dit gerichte onderzoek te overschrijden.
+Dit is een probleem voor beveiliging en audits. Te veel rechten verhogen het risico op fouten en misbruik. Ze maken het ook moeilijker om uit te leggen waarom een gebruiker bepaalde toegang heeft.
 
+Deze bachelorproef onderzoekt hoe privilege creep in RACF technisch zichtbaar kan worden gemaakt. De focus ligt op detectie en rapportage. De PoC trekt geen rechten in en past RACF niet automatisch aan.
+
+\subsection*{Probleemdomein en oplossingsdomein}
+
+Het probleemdomein van deze bachelorproef is privilege creep in RACF. Het gaat dus over gebruikers die na verloop van tijd meer groepen hebben dan nodig is. Dat kan gebeuren door functiewijzigingen, tijdelijke toegang of oude projectrechten die blijven bestaan.
+
+Het oplossingsdomein is een technische PoC met JCL, REXX en CARLa. Die PoC vergelijkt gebruikers op basis van hun RACF groepen. Het resultaat is een rapport met de gebruiker, de meest gelijkaardige gebruiker, de similarity score, additional groups en missing groups.
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
 
-In de praktijk bevinden organisaties die afhankelijk zijn van IBM z/OS RACF zich in een delicate spanning tussen operationele flexibiliteit en de rigide eisen van toegangsbeheer. Gebruikers kunnen tijdelijke of uitgebreide rechten krijgen om in het bijzonder taken uit te voeren, maar deze toestemmingen worden nauwelijks nauwkeurig herzien of ingetrokken. In de loop van de tijd stapelen dergelijke lapsussen zich op tot wat bekend staat als privilege creep - een bijna onmerkbare verschuiving van toegang die stilletjes de beveiligingsrisico's vergroot en de auditprocedures compliceert. Het gevaar hier is subtiel; het is niet altijd duidelijk totdat er een incident plaatsvindt, en zelfs dan kan het volgen van het pad van opgebouwde rechten als labyrintisch aanvoelen.
-De beoogde doelgroep voor deze thesis bestaat uit drie met elkaar verweven groepen:
+Organisaties moeten gebruikers genoeg rechten geven om hun werk te doen. Tegelijk mogen gebruikers niet meer rechten hebben dan nodig. In de praktijk is dat moeilijk. Nieuwe rechten worden vaak snel toegevoegd. Oude rechten worden minder snel verwijderd.
+
+Daardoor kan privilege creep ontstaan. Het probleem is niet altijd zichtbaar. Een gebruiker kan technisch geldige toegang hebben, maar die toegang past niet meer bij de huidige functie.
+
+Voor RACF beheerders en auditors is het moeilijk om dit handmatig te controleren. Ze moeten gebruikers, groepen en rechten naast elkaar leggen. In een grote omgeving kost dat veel tijd.
+
+Deze bachelorproef wil daarom een methode uitwerken die RACF data gebruikt om opvallende groepscombinaties te tonen. De PoC moet helpen om gebruikers te vinden die mogelijk te veel groepen hebben.
+
+De doelgroep bestaat uit:
 
 \begin{itemize}
-	\item RACF security administrators verantwoordelijk voor gebruikers- en autorisatiebeheer binnen z/OS-omgevingen;
-	\item Mainframe systeemprogrammeurs betrokken bij securityconfiguraties;
-	\item Interne en externe IT-auditors die compliancecontroles uitvoeren op toegangsbeheer;
+	\item RACF beheerders;
+	\item mainframe systeemprogrammeurs;
+	\item interne en externe IT-auditors.
 \end{itemize}
-
-Voor deze professionals blijft een systematische, reproduceerbare en objectieve manier om rechten te identificeren die onnodig of erger, potentieel riskant zijn, grotendeels ongrijpbaar. Huidige controles zijn vaak handmatig, arbeidsintensief en sterk afhankelijk van de ervaring en het oordeel van individuele beheerders. De afwezigheid van een technisch onderbouwde methode maakt privilege creep grotendeels onzichtbaar, alleen detecteerbaar door moeizame inspanning en zorgvuldige intuïtie.
-
-Deze bachelorproef probeert die kloof te overbruggen. In plaats van brede beleidsvoorschriften te bieden, stelt het een concrete, datagestuurde aanpak voor om detectie mogelijk te maken, een aanpak die RACF-beheerders in staat stelt om periodieke toegangsbeoordelingen uit te voeren en zich met  vertrouwen voor te bereiden op audits. Het doel is niet om rigide antwoorden op te leggen, maar om de schaduwen van verzamelde machtigingen te verlichten, waardoor de anders verborgen patronen van privilegecreep zichtbaar worden door zorgvuldige analyse van RACF-gegevens.
-
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
 
-In het hart van deze bachelorproef ligt een centrale vraag, die misschien eenvoudig lijkt maar vol complexiteit zit:
-\textit{Hoe kan privilege creep binnen het RACF-toegangsbeheer van IBM z/OS-mainframes technisch worden geïdentificeerd en geanalyseerd op basis van gebruikers-, groeps- en resourceprofielen, zodat gebruikersrechten in overeenstemming blijven met het least privilegeprincipe?}
+De centrale onderzoeksvraag is:
 
-Om dit te benaderen, komen er sub-vragen naar voren, die elk een ander facet van het probleem onderzoeken:
+\textit{Hoe kan privilege creep binnen RACF op IBM z/OS technisch worden geidentificeerd en geanalyseerd op basis van gebruikers en groepen, zodat gebruikersrechten beter aansluiten bij het least privilegeprincipe?}
+
+Daaruit volgen deze deelvragen:
+
 \begin{itemize}
-	\item Welke vormen van privilege creep komen voor binnen RACF-omgevingen?
-	\item Welke RACF-gegevens elementen gebruikersattributen, groepshiërarchieën, autorisatieprofielen lijken het meest informatief voor technische analyse?
-	\item Op basis van welke objectieve normen kunnen overmatige of slapende rechten worden onderscheiden van die wel echt nodig zijn?
-	\item Op welke manier kan het detectieproces worden vertaald naar een reproduceerbaar Proof of Concept, waardoor consistente resultaten mogelijk worden in plaats van ad-hoc beoordelingen?
-	\item Hoe ver kan een dergelijke oplossing realistisch gezien periodieke toegangsbeoordelingen en auditprocedures ondersteunen zonder de grenzen van zijn ontwerp te overschrijden?
+	\item Welke vormen van privilege creep komen voor in RACF?
+	\item Welke RACF gegevens zijn nuttig voor de analyse?
+	\item Hoe kunnen gebruikers objectief met elkaar worden vergeleken?
+	\item Hoe kan dit worden uitgewerkt in een reproduceerbare PoC?
+	\item Hoe kan de output helpen bij audits en toegangsreviews?
 \end{itemize}
-
-Het moet worden opgemerkt dat dit onderzoek opzettelijk praktisch is. Hoewel het zich bezighoudt met de bestaande literatuur, is de bedoeling niet slechts om samen te vatten wat bekend is. In plaats daarvan onderneemt de studie een concrete onderzoek: het ontwerpen, implementeren en evalueren van een methode die in staat is om de anders ongrijpbare patronen van privilege creep waarneembaar te maken. Het doel is niet absolute zekerheid RACF-omgevingen zijn niet zo genereus—maar om het terrein te verlichten met een mate van technische helderheid die tot nu toe ontbrak.
-
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Het doel van deze bachelorproef is om een technische Proof of Concept te ontwikkelen en te evalueren die privilege creep binnen RACF minstens gedeeltelijk zichtbaar maakt door zorgvuldige analyse van RACF-gegevens. Het doel is niet om een onfeilbare oplossing te bieden absolute zekerheid is zelden haalbaar in deze complexe mainframe omgevingen maar om een methode te bieden die patronen belicht die anders verborgen zouden blijven.
-Het beoogde resultaat is een zelfstandige script of tool die in staat is om:
+Het doel is om een Proof of Concept te bouwen die privilege creep in RACF zichtbaar maakt. De PoC vergelijkt gebruikers op basis van hun groepen. Daarna maakt ze een rapport met mogelijke aandachtspunten.
+
+De PoC moet:
 
 \begin{itemize}
-	\item Het correlateren van gebruikersprofielen, groepshiërarchieën en resource-autorisatie s;
-
-	\item Het markeren van potentiële gevallen van privilege creep volgens een reeks vooraf gedefinieerde detectiecriteria;
-
-	\item Het produceren van gestructureerde rapporten die door beheerders en auditors op een zinvolle manier kunnen worden geïnterpreteerd.
+	\item gebruikers en groepen kunnen verwerken;
+	\item gebruikers met elkaar kunnen vergelijken;
+	\item additional groups en missing groups kunnen tonen;
+	\item een duidelijk rapport maken voor beheerders en auditors.
 \end{itemize}
 
-Succes, voor de doeleinden van deze thesis, wordt beoordeeld langs drie dimensies:
+De PoC hoeft geen rechten te verwijderen. Ze is bedoeld als hulpmiddel voor analyse.
+
+\subsection*{\IfLanguageName{dutch}{Scope}{Scope}}%
+\label{sec:scope}
+
+De scope is bewust beperkt. De bachelorproef kijkt naar IBM z/OS omgevingen met RACF. De PoC richt zich vooral op groepslidmaatschappen.
+
+Niet in scope:
+
 \begin{itemize}
-	\item Het Proof of Concept moet reproduceerbare en redelijk consistente resultaten opleveren;
-
-	\item De detectiemethodologie moet transparant en interpreteerbaar blijven voor de beoogde gebruikers.
-
-	\item De oplossing moet, althans binnen een representatieve testdataset, aantonen dat privilege creep technisch identificeerbaar is.
+	\item realtime monitoring;
+	\item automatische intrekking van rechten;
+	\item volledige integratie met IAM-platformen;
+	\item volledige analyse van alle resourceprofielen;
+	\item technische gebruikers of non-personal accounts.
 \end{itemize}
 
+Technische gebruikers vallen buiten de scope omdat ze meestal niet hetzelfde rechtenmodel volgen als persoonlijke gebruikers. Hun rechten hangen vaak samen met jobs, applicaties of systeemprocessen. De PoC is bedoeld voor controles op persoonlijke gebruikers waarbij groepslidmaatschappen een logisch controlemiddel zijn.
 
-\section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
+\subsection*{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
 
-% Het is gebruikelijk aan het einde van de inleiding een overzicht te
-% geven van de opbouw van de rest van de tekst. Deze sectie bevat al een aanzet
-% die je kan aanvullen/aanpassen in functie van je eigen tekst.
+De rest van deze bachelorproef is als volgt opgebouwd.
 
-De rest van deze bachelorproef is als volgt opgebouwd:
+Hoofdstuk~\ref{ch:stand-van-zaken} bespreekt de achtergrond: z/OS, RACF, least privilege en privilege creep.
 
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie rond least privilege, privilege creep en RACF-beveiligingsmechanismen.
+Hoofdstuk~\ref{ch:methodologie} legt uit hoe het onderzoek is uitgevoerd.
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
+Hoofdstuk~\ref{ch:analyse} beschrijft de analyse en de similarity score.
 
-In Hoofdstuk~\ref{ch:analyse} wordt de analyse van RACF-gegevens en detectiecriteria uitgewerkt.
+Hoofdstuk~\ref{ch:implementatie} beschrijft de drie versies van de PoC.
 
-In Hoofdstuk~\ref{ch:implementatie} wordt het ontwerp en de implementatie van de Proof of Concept beschreven.
+Hoofdstuk~\ref{ch:evaluatie} bespreekt de testscenario's en de resultaten.
 
-In Hoofdstuk~\ref{ch:evaluatie} worden de testscenario’s en evaluatieresultaten besproken.
-
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+Hoofdstuk~\ref{ch:conclusie} geeft het antwoord op de onderzoeksvraag en bespreekt beperkingen en toekomstig werk.

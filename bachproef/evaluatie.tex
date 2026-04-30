@@ -1,2 +1,549 @@
-\chapter{\IfLanguageName{dutch}{Evaluatie}{Evaluation}}%
+\chapter[Evaluatie]{\IfLanguageName{dutch}{Evaluatie: testscenario's, resultaten en beperkingen}{Evaluation: test scenarios, results and limitations}}%
 \label{ch:evaluatie}
+
+Dit hoofdstuk beoordeelt de PoC. De vraag is niet of de PoC alle privilege creep perfect vindt. De vraag is of de PoC RACF gebruikers en groepen correct kan vergelijken en een bruikbaar rapport maakt.
+
+\section{Evaluatiecriteria}
+
+De PoC wordt beoordeeld op de criteria uit de methodologie. Die criteria zijn gekozen omdat ze rechtstreeks aansluiten bij het doel van de PoC: privilege creep zichtbaar maken zonder RACF automatisch aan te passen.
+
+De beoordeling wordt samengevat in drie punten:
+
+\begin{itemize}
+	\item \textbf{Correctheid}: verwerkt de PoC gebruikers, groepen en verschillen correct?
+	\item \textbf{Herhaalbaarheid}: geeft dezelfde invoer telkens hetzelfde rapport?
+	\item \textbf{Leesbaarheid}: is het rapport duidelijk voor beheerders en auditors?
+\end{itemize}
+
+\subsection*{Evaluatie van versie 1}
+
+Versie 1 toont dat de basis werkt. JCL start twee REXX scripts. Het eerste script haalt gebruikers op uit groepen. Het tweede script haalt de groepen van die gebruikers op en maakt het rapport.
+
+Het voordeel is dat de werking makkelijk te volgen is. Het nadeel is dat de invoer sterk afhangt van de handmatig gemaakte dataset met groepen.
+
+In deze versie gebeurt het ophalen van groepsinformatie via RACF commando-output. REXX vangt die output op en zoekt regels met \texttt{GROUP=}. Dat werkt, maar het maakt de REXX code afhankelijk van tekstuele output.
+
+\subsection*{Evaluatie van versie 2}
+
+Versie 2 gebruikt CARLa om gebruikers op te halen. Dat maakt de selectie duidelijker. De rest van de verwerking blijft gelijkaardig aan versie 1.
+
+Deze versie is beter dan versie 1, maar de groepsinformatie wordt nog niet volledig via CARLa opgehaald.
+
+Het verschil met versie 1 zit dus vooral in de gebruikersselectie. CARLa bepaalt welke userids in scope zijn. REXX haalt daarna nog altijd de groepen per gebruiker op.
+
+\subsection*{Evaluatie van versie 3}
+
+Versie 3 gebruikt CARLa voor gebruikers en groepen. REXX doet daarna de vergelijking en schrijft het rapport. Deze versie heeft ook een excludelijst voor groepen die geen nut hebben in de vergelijking.
+
+Deze versie is het meest bruikbaar. De data wordt beter opgehaald en de analyse is beter herhaalbaar. De excludelijst vermindert ruis in de score.
+
+In deze versie levert CARLa per gebruiker een lijst met connectgroepen. REXX hoeft die groepen alleen nog te lezen, te filteren en te vergelijken. Daardoor is de rolverdeling scherper dan in de vorige versies.
+
+\subsection*{Interpretatie van het rapport}
+
+Het rapport bevat per gebruiker:
+
+\begin{itemize}
+	\item de gebruiker;
+	\item de meest gelijkaardige gebruiker;
+	\item de similarity score;
+	\item additional groups;
+	\item missing groups.
+\end{itemize}
+
+Additional groups zijn de belangrijkste aandachtspunten. Ze tonen groepen die de onderzochte gebruiker extra heeft. Missing groups helpen om de vergelijking te begrijpen.
+
+\subsection*{Sterktes van de PoC}
+
+De PoC heeft drie sterktes. Ten eerste is de methode duidelijk. De score en de groepsverschillen zijn te controleren.
+
+Ten tweede past de PoC bij z/OS. Ze gebruikt JCL, REXX en CARLa. Er is geen extern platform nodig.
+
+Ten derde helpt de PoC bij toegangsreviews. De beheerder krijgt sneller zicht op gebruikers die verder bekeken moeten worden.
+
+\section{Beperkingen}
+
+De PoC kijkt vooral naar groepen. Ze toont niet volledig welke resources achter elke groep zitten. Een extra groep is dus niet altijd een groot risico.
+
+De PoC kent ook de functie van een gebruiker niet. Twee gebruikers kunnen op elkaar lijken, maar toch andere taken hebben. Daarom blijft menselijke controle nodig.
+
+\section{Testscenario's}
+
+De testset bevat verschillende soorten gebruikers. Zo kan gecontroleerd worden of de PoC logisch reageert.
+
+\begin{itemize}
+	\item gebruikers met dezelfde groepen;
+	\item gebruikers met een extra groep;
+	\item gebruikers met meerdere extra groepen;
+	\item gebruikers zonder goede match;
+	\item gebruikers met algemene groepen;
+	\item gebruikers waarbij een groep uitgesloten wordt.
+\end{itemize}
+
+\subsection*{Scenario 1: identieke gebruikers}
+
+Dit scenario gebruikt twee gebruikers met dezelfde groepen. De score moet 1 zijn. Er mogen geen additional of missing groups zijn.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 1: identieke gebruikers]{Testscenario met twee gebruikers met identieke groepssets}
+\label{tab:scenario-identieke-gebruikers}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & PAYROLL, FINREAD, BATCH01 \\
+\hline
+USERB & PAYROLL, FINREAD, BATCH01 \\
+\hline
+\end{tabular}
+\end{table}
+
+Dit test of de PoC gelijke profielen juist herkent.
+
+\subsection*{Scenario 2: een additional group}
+
+In dit scenario heeft een gebruiker een extra groep.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 2: een additional group]{Testscenario met een gebruiker die een additional group heeft}
+\label{tab:scenario-een-additional-group}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & PAYROLL, FINREAD, BATCH01, HRVIEW \\
+\hline
+USERB & PAYROLL, FINREAD, BATCH01 \\
+\hline
+\end{tabular}
+\end{table}
+
+De score is 0,75. \texttt{HRVIEW} moet bij \texttt{USERA} als additional group verschijnen.
+
+\subsection*{Scenario 3: meerdere additional groups}
+
+Hier heeft een gebruiker meerdere extra groepen.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 3: meerdere additional groups]{Testscenario met meerdere additional groups bij een gebruiker}
+\label{tab:scenario-meerdere-additional-groups}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & PAYROLL, FINREAD, BATCH01, HRVIEW, PRODADM \\
+\hline
+USERB & PAYROLL, FINREAD, BATCH01 \\
+\hline
+\end{tabular}
+\end{table}
+
+De score is 0,60. \texttt{HRVIEW} en \texttt{PRODADM} moeten als additional groups verschijnen.
+
+\subsection*{Scenario 4: geen goede referentie}
+
+Soms heeft een gebruiker geen goede match in de dataset.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 4: geen goede referentie]{Testscenario waarin een gebruiker geen goede referentie heeft}
+\label{tab:scenario-geen-goede-referentie}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & DB2ADM, SYSMAINT, OPERCTL \\
+\hline
+USERB & PAYROLL, FINREAD, BATCH01 \\
+\hline
+USERC & HRVIEW, HRUPD, HRBATCH \\
+\hline
+\end{tabular}
+\end{table}
+
+In dit voorbeeld deelt \texttt{USERA} geen groepen met de andere gebruikers. De score is 0. De beheerder moet dit dus voorzichtig lezen.
+
+\subsection*{Scenario 5: algemene groepen}
+
+Algemene groepen kunnen de score vertekenen. In dit voorbeeld heeft elke gebruiker \texttt{BASEUSR}.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 5: algemene groepen]{Testscenario met een algemene groep die bij meerdere gebruikers voorkomt}
+\label{tab:scenario-algemene-groepen}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & BASEUSR, PAYROLL, FINREAD \\
+\hline
+USERB & BASEUSR, HRVIEW, HRUPD \\
+\hline
+USERC & BASEUSR, DEVTEST, APPLDEV \\
+\hline
+\end{tabular}
+\end{table}
+
+Zonder excludelijst lijkt er altijd overlap te zijn. Dat kan misleidend zijn.
+
+\subsection*{Scenario 5b: uitsluiten van groepen}
+
+Dit scenario test de excludelijst. \texttt{BASEUSR} wordt uitgesloten.
+
+\begin{table}[htbp]
+\centering
+\caption[Scenario 5b: uitsluiten van groepen]{Testscenario voor het uitsluiten van niet-relevante groepen}
+\label{tab:scenario-uitsluiten-groepen}
+\begin{tabular}{|p{3cm}|p{8cm}|}
+\hline
+\textbf{Gebruiker} & \textbf{Groepen} \\
+\hline
+USERA & BASEUSR, PAYROLL, FINREAD \\
+\hline
+USERB & BASEUSR, HRVIEW, HRUPD \\
+\hline
+\end{tabular}
+\end{table}
+
+Als \texttt{BASEUSR} wordt meegeteld, delen de gebruikers een groep. Als \texttt{BASEUSR} wordt uitgesloten, is er geen overlap. Dat geeft een betere vergelijking.
+
+\subsection*{Scenario 6: historisch gegroeide gebruiker}
+
+Dit scenario lijkt het meest op privilege creep. Een gebruiker heeft groepen uit meerdere rollen.
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, BATCH01, HRVIEW, HRUPD, PRODADM
+\end{verbatim}
+
+Een gewone payroll gebruiker heeft bijvoorbeeld:
+
+\begin{verbatim}
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+De PoC toont dan \texttt{HRVIEW}, \texttt{HRUPD} en \texttt{PRODADM} als additional groups. De beheerder kan daarna controleren of die groepen nog nodig zijn.
+
+\section{Resultaten}
+
+De scenario's tonen dat de PoC de basisgevallen correct verwerkt:
+
+\begin{itemize}
+	\item gelijke gebruikers krijgen score 1;
+	\item gebruikers zonder overlap krijgen score 0;
+	\item additional groups staan aan de juiste kant;
+	\item missing groups worden apart getoond;
+	\item dubbele groepen tellen niet dubbel mee.
+\end{itemize}
+
+\subsection*{Herhaalbaarheid}
+
+Bij dezelfde invoer geeft de PoC hetzelfde rapport. Versie 3 is hierin het sterkst, omdat CARLa de data ophaalt en de excludelijst vastgelegd kan worden.
+
+Het is wel nodig om de gebruikte input te bewaren. Anders is het later moeilijk om het rapport te controleren.
+
+\subsection*{Leesbaarheid}
+
+Het rapport is eenvoudig. Dat past bij de doelgroep. RACF beheerders werken vaak met tekstuele output.
+
+Een verbetering kan zijn om een korte samenvatting toe te voegen, bijvoorbeeld het aantal onderzochte gebruikers en het aantal gebruikers met additional groups.
+
+\subsection*{Vergelijking van de drie versies}
+
+\begin{table}[htbp]
+\centering
+\caption[Vergelijking van de drie PoC-versies]{Vergelijking van dataverzameling, sterktes en beperkingen per PoC-versie}
+\label{tab:vergelijking-poc-versies}
+\begin{tabular}{|p{2.5cm}|p{3.5cm}|p{3.5cm}|p{3cm}|}
+\hline
+\textbf{Versie} & \textbf{Dataverzameling} & \textbf{Sterkte} & \textbf{Beperking} \\
+\hline
+Versie 1 & Dataset en REXX & Eenvoudig te testen & Veel handmatige input \\
+\hline
+Versie 2 & CARLa voor gebruikers & Betere gebruikersselectie & Groepen nog niet volledig via CARLa \\
+\hline
+Versie 3 & CARLa voor gebruikers en groepen, met excludelijst & Best herhaalbaar en minder ruis & Query en excludelijst moeten correct zijn \\
+\hline
+\end{tabular}
+\end{table}
+
+Versie 3 is de beste basis voor verder gebruik.
+
+\subsection*{Fout-positieven}
+
+Een fout-positief betekent dat een extra groep verdacht lijkt, maar toch terecht is. Dat kan gebeuren. Een gebruiker kan bijvoorbeeld een extra taak hebben.
+
+Daarom mag de PoC geen rechten verwijderen. De output moet altijd nagekeken worden.
+
+\subsection*{Fout-negatieven}
+
+Een fout-negatief betekent dat privilege creep bestaat, maar niet zichtbaar wordt. Dat kan gebeuren als veel gebruikers dezelfde overbodige groep hebben. Dan lijkt die groep normaal.
+
+Daarom blijft een groepsreview nodig. De PoC is een aanvulling, geen vervanging van ander auditwerk.
+
+\subsection*{Impact op audits}
+
+De PoC helpt audits door verschillen sneller zichtbaar te maken. Een auditor kan gerichter vragen stellen. Bijvoorbeeld: waarom heeft deze gebruiker deze extra groep? Is die toegang nog nodig?
+
+De PoC maakt de review dus concreter. Ze vervangt de beslissing niet.
+
+\subsection*{Wat de PoC aantoont}
+
+De PoC toont dat gebruikers vergeleken kunnen worden op basis van RACF groepen. Ze toont ook dat JCL, REXX en CARLa genoeg zijn om een eerste werkende oplossing te bouwen.
+
+\subsection*{Wat de PoC niet aantoont}
+
+De PoC bewijst niet dat elke additional group fout is. Ze toont ook niet de volledige toegang tot alle resources. Daarvoor zijn resourceprofielen en gebruiksdata nodig.
+
+\section{Aanbevelingen}
+
+Gebruik de PoC op een duidelijke scope, bijvoorbeeld een applicatie of afdeling. Lees het rapport als startpunt voor review. Beheer de excludelijst goed. Herhaal de analyse op vaste momenten, zodat trends zichtbaar worden.
+
+\subsection*{Mogelijke uitbreidingen}
+
+Een volgende versie kan resourceprofielen toevoegen. Dan wordt duidelijker welke toegang achter een groep zit.
+
+Ook gebruiksdata kan nuttig zijn. Als een groep lang niet gebruikt is, kan dat een sterker signaal zijn voor privilege creep.
+
+Een andere uitbreiding is betere rapportage, bijvoorbeeld CSV of HTML.
+
+\subsection*{Eindoordeel}
+
+De PoC is geslaagd binnen de gekozen scope. Ze vindt geen privilege creep met absolute zekerheid, maar ze maakt verdachte groepsverschillen zichtbaar. Dat is nuttig voor RACF beheerders en auditors.
+
+\subsection*{Extra test: dubbele groepen}
+
+Een extract kan soms dezelfde groep meer dan een keer tonen. Dat mag de score niet veranderen. De PoC moet dubbele groepen dus negeren.
+
+Bij versie 3 is dit minder belangrijk, omdat CARLa normaal geen dubbele connectgroepen voor dezelfde gebruiker aanlevert. Ook bij versie 1 is de kans klein dat RACF dezelfde connectie dubbel toont. Toch blijft de controle nuttig als verdedigingslijn in de REXX logica. Een fout of handmatig testbestand mag de score niet vervormen.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, FINREAD, BATCH01
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+In dit geval moeten \texttt{USERA} en \texttt{USERB} als gelijk worden gezien. \texttt{FINREAD} mag maar een keer meetellen. De score moet dus 1 zijn.
+
+Deze test is belangrijk omdat invoerbestanden niet altijd perfect zijn. Een kleine fout in de input mag niet meteen een fout rapport opleveren.
+
+\subsection*{Extra test: gebruiker zonder groepen}
+
+Een gebruiker kan in de selectie staan, maar geen bruikbare groepen hebben. Dat kan verschillende oorzaken hebben. Misschien is de gebruiker niet goed opgehaald. Misschien zijn alle groepen uitgesloten. Misschien hoort de gebruiker niet in de scope.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA:
+USERB: PAYROLL, FINREAD
+\end{verbatim}
+
+De PoC kan \texttt{USERA} niet goed vergelijken. Het rapport moet dit niet verbergen. De beheerder moet kunnen zien dat er geen goede groepsdata is.
+
+Dit is belangrijk voor audits. Een leeg resultaat mag niet worden gelezen als "geen probleem". Soms betekent het gewoon dat de input niet volledig is.
+
+\subsection*{Extra test: alle groepen uitgesloten}
+
+Een gebruiker kan alleen groepen hebben die in de excludelijst staan.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: BASEUSR, DEFAULT
+USERB: BASEUSR, DEFAULT
+\end{verbatim}
+
+Als \texttt{BASEUSR} en \texttt{DEFAULT} uitgesloten zijn, blijven er geen groepen over. De PoC kan dan geen nuttige vergelijking maken.
+
+Dit toont waarom de excludelijst voorzichtig moet worden gebruikt. Als te veel groepen worden uitgesloten, verliest de analyse informatie.
+
+\subsection*{Extra test: brede gebruiker}
+
+Een brede gebruiker heeft veel groepen. Dat kan terecht zijn, maar het kan ook wijzen op oude toegang.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, BATCH01, HRVIEW, HRUPD, PRODADM, TESTADM
+USERB: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+De score is lager dan bij een klein verschil. Toch is dit een interessant resultaat. \texttt{USERA} heeft veel additional groups. De beheerder moet nagaan waarom die groepen bestaan.
+
+Deze test toont dat men niet alleen naar de score mag kijken. De inhoud van de additional groups blijft belangrijk.
+
+\subsection*{Extra test: twee gelijke brede gebruikers}
+
+Soms hebben twee gebruikers allebei te veel groepen. Dan lijken ze sterk op elkaar. De PoC ziet dan weinig verschil.
+
+Voorbeeld:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD, BATCH01, HRVIEW, PRODADM
+USERB: PAYROLL, FINREAD, BATCH01, HRVIEW, PRODADM
+\end{verbatim}
+
+De score is 1. Er zijn geen additional groups. Toch kunnen beide gebruikers te veel rechten hebben.
+
+Dit is een beperking van de methode. De PoC vindt vooral verschillen tussen gebruikers. Ze vindt niet automatisch groepen die bij iedereen te ruim zijn.
+
+Om dit te ondervangen is een tweede controle nodig. Naast deze PoC kan men periodiek de groepen zelf reviewen. Daarbij bekijkt de eigenaar van een groep welke resourceprofielen en rechten aan die groep hangen. Ook kan men gebruiksdata toevoegen. Als een brede groep lang niet gebruikt wordt, is dat een extra signaal voor opschoning.
+
+\subsection*{Technische accounts buiten scope}
+
+Technische accounts hebben vaak andere rechten dan gewone gebruikers. Ze worden gebruikt voor jobs, applicaties of systeemprocessen. Daardoor passen ze niet goed in deze vergelijking.
+
+Voorbeeld:
+
+\begin{verbatim}
+APPBAT1: SYSBATCH, APPJOB, PRODRUN
+USER01:  APPREAD, APPVIEW
+USER02:  APPREAD, APPVIEW
+\end{verbatim}
+
+\texttt{APPBAT1} hoort niet in dezelfde vergelijking als gewone gebruikers. De score met gewone gebruikers zal laag zijn. Dat is niet per se een probleem.
+
+Deze test toont opnieuw dat de scope belangrijk is. Technische accounts vallen buiten deze PoC en moeten via een ander controleproces worden onderzocht.
+
+\subsection*{Praktische lezing van een rapportregel}
+
+Een beheerder kan een rapportregel stap voor stap lezen.
+
+\begin{verbatim}
+USER:              PAY004
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  0.75
+ADDITIONAL GROUPS: HRVIEW
+MISSING GROUPS:    -
+\end{verbatim}
+
+De eerste vraag is: hoort \texttt{PAY004} bij dezelfde groep gebruikers als \texttt{PAY001}? Als dat ja is, is de vergelijking nuttig.
+
+De tweede vraag is: waarom heeft \texttt{PAY004} \texttt{HRVIEW}? Misschien is dat oude toegang. Misschien is het nodig voor een extra taak.
+
+De derde vraag is: wie kan dit bevestigen? Vaak is dat een applicatie-eigenaar of teamverantwoordelijke.
+
+\subsection*{Praktische lezing van een lage score}
+
+Een lage score vraagt voorzichtigheid.
+
+\begin{verbatim}
+USER:              SYS001
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  0.12
+ADDITIONAL GROUPS: SYSADM, OPERCTL
+MISSING GROUPS:    PAYROLL, FINREAD
+\end{verbatim}
+
+Dit resultaat toont vooral dat \texttt{SYS001} niet goed lijkt op \texttt{PAY001}. De additional groups zijn misschien niet verkeerd. De gekozen referentie is gewoon niet sterk.
+
+Bij lage scores moet de beheerder eerst kijken of de scope goed gekozen is.
+
+\subsection*{Praktische lezing met excludelijst}
+
+Als een groep is uitgesloten, komt ze niet in de vergelijking. Dat moet gedocumenteerd zijn.
+
+Voorbeeld:
+
+\begin{verbatim}
+Excludelijst: BASEUSR
+
+USERA: BASEUSR, PAYROLL, FINREAD
+USERB: BASEUSR, PAYROLL, FINREAD, HRVIEW
+\end{verbatim}
+
+De PoC vergelijkt dan:
+
+\begin{verbatim}
+USERA: PAYROLL, FINREAD
+USERB: PAYROLL, FINREAD, HRVIEW
+\end{verbatim}
+
+\texttt{HRVIEW} blijft zichtbaar als additional group. \texttt{BASEUSR} verstoort de score niet.
+
+\subsection*{Wat een beheerder met het rapport doet}
+
+Het rapport is een startpunt. Een beheerder kan per melding deze stappen volgen:
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		node distance=1.2cm,
+		box/.style={draw, rounded corners=2pt, align=center, minimum width=3.5cm, minimum height=0.85cm},
+		arrow/.style={-{Latex[length=2mm]}, thick}
+	]
+		\node[box] (line) {Rapportregel};
+		\node[box, right=of line] (match) {Referentie\\controleren};
+		\node[box, right=of match] (owner) {Eigenaar\\bevragen};
+		\node[box, below=of owner] (rbac) {RBAC-proces\\volgen};
+		\node[box, left=of rbac] (change) {Wijziging\\documenteren};
+		\node[box, left=of change] (close) {Melding\\afsluiten};
+		\draw[arrow] (line) -- (match);
+		\draw[arrow] (match) -- (owner);
+		\draw[arrow] (owner) -- (rbac);
+		\draw[arrow] (rbac) -- (change);
+		\draw[arrow] (change) -- (close);
+	\end{tikzpicture}
+	\caption[Gebruik van het rapport in review]{Gebruik van het rapport in een toegangsreview. De PoC levert een aandachtspunt. De beslissing blijft binnen het normale RBAC-proces. Bron: eigen schema.}
+	\label{fig:rapport-reviewproces}
+\end{figure}
+
+\begin{enumerate}
+	\item controleer of de referentiegebruiker logisch is;
+	\item bekijk de additional groups;
+	\item zoek de eigenaar van de groep of applicatie;
+	\item vraag of de toegang nog nodig is;
+	\item documenteer de beslissing;
+	\item verwijder de groep alleen via het normale wijzigingsproces.
+\end{enumerate}
+
+Zo blijft de PoC veilig. Ze helpt bij het vinden van vragen, maar neemt geen beslissingen over rechten.
+
+\subsection*{Wat een auditor met het rapport doet}
+
+Een auditor kan het rapport gebruiken om gerichte vragen te stellen. In plaats van alle groepen van alle gebruikers te bekijken, kan de auditor beginnen bij duidelijke verschillen.
+
+Voorbeelden van auditvragen zijn:
+
+\begin{itemize}
+	\item Waarom heeft deze gebruiker deze additional group?
+	\item Wanneer is deze groep toegekend?
+	\item Wie heeft de toegang goedgekeurd?
+	\item Is de toegang nog nodig?
+	\item Staat de toegang in een reviewproces?
+\end{itemize}
+
+Het rapport maakt de audit dus concreter. Het geeft geen eindantwoord, maar wel betere vragen.
+
+\subsection*{Beoordeling van de excludelijst}
+
+De excludelijst is nuttig, maar ze kan ook verkeerd gebruikt worden. Als een belangrijke groep wordt uitgesloten, kan privilege creep minder zichtbaar worden.
+
+Daarom moet elke uitgesloten groep een reden hebben. Bijvoorbeeld:
+
+\begin{verbatim}
+BASEUSR  - algemene basisgroep, geen onderscheidende waarde
+DEFAULT  - standaardgroep, geen rechten voor de onderzochte applicatie
+TECHGRP  - technische groep buiten auditcontext
+\end{verbatim}
+
+Deze uitleg helpt bij controle. Een auditor kan dan zien waarom de groep niet is meegenomen.
+
+\subsection*{Beoordeling van herhaling}
+
+Een eenmalig rapport is nuttig. Een herhaald rapport is nuttiger. Als dezelfde additional group elke maand terugkomt, is dat een sterker signaal.
+
+Herhaling kan ook tonen of opschoning werkt. Als een groep verwijderd is, zou ze in het volgende rapport niet meer als additional group mogen verschijnen.
+
+Daarom is het goed om rapporten te bewaren. Zo kan men trends zien.
+
+\subsection*{Samenvatting van de evaluatie}
+
+De evaluatie toont dat de PoC bruikbaar is als hulpmiddel. Ze verwerkt gebruikers en groepen, berekent scores en toont verschillen.
+
+De PoC is vooral sterk wanneer de scope goed gekozen is. Ze is minder sterk wanneer gebruikers te verschillend zijn of wanneer de hele dataset al te veel rechten heeft.
+
+De belangrijkste conclusie blijft dat de PoC review ondersteunt. Ze vervangt geen beheerder en geen auditor.

@@ -336,7 +336,11 @@
         not running XeLaTeX/LuaLaTeX: using native fonts}
 
     \RequirePackage[defaultfam,tabular,lining]{montserrat}
-    \RequirePackage{firamath}
+    \IfFileExists{firamath.sty}{%
+        \RequirePackage{firamath}%
+    }{%
+        \ClassWarning{\@classname}{Package 'firamath' not found; using sfmath fallback}%
+    }
     \RequirePackage{sfmath} % Fallback sans serif math font
 
     \RequirePackage[T1]{fontenc}
@@ -537,8 +541,7 @@
 
     \end{titlepage}%
     
-    \thispagestyle{empty}
-    \null\clearpage\restoregeometry
+    \restoregeometry
   }
 \fi
 

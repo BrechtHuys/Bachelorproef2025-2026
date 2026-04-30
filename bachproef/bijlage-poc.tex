@@ -1,0 +1,277 @@
+\chapter[Voorbeeldbestanden]{Voorbeeldbestanden van de Proof of Concept}
+\label{ch:bijlage-poc}
+
+Deze bijlage toont voorbeeldbestanden die horen bij de PoC. De voorbeelden zijn fictief. Ze dienen alleen om de werking van de PoC duidelijk te maken.
+
+\section{Inputbestanden}
+
+In versie 1 start de PoC met een sequentiele dataset. In die dataset staan de groepen die onderzocht worden. Elke regel bevat een groepsnaam.
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+HRVIEW
+HRUPD
+PRODADM
+\end{verbatim}
+
+Deze lijst bepaalt de start van de analyse. Als een groep niet in de lijst staat, worden gebruikers uit die groep mogelijk niet meegenomen. Daarom moet de dataset goed gekozen worden.
+
+Een te kleine lijst kan gebruikers missen. Een te brede lijst kan gebruikers mengen die eigenlijk niet bij elkaar horen. Voor een eerste audit is het vaak beter om te starten met een duidelijke applicatie of afdeling.
+
+\subsection*{Voorbeeld van gebruikers uit versie 1}
+
+Het eerste REXX script kan uit de groependataset een gebruikerslijst maken. Een voorbeeld van zo'n werkdataset:
+
+\begin{verbatim}
+PAY001
+PAY002
+PAY003
+PAY004
+HR001
+HR002
+ADM001
+\end{verbatim}
+
+Deze dataset wordt daarna gebruikt door het tweede REXX script. Dat script haalt per gebruiker de groepen op.
+
+Tijdens testen is dit bestand nuttig. Als een gebruiker niet in het eindrapport staat, kan men eerst controleren of die gebruiker wel in deze werkdataset stond.
+
+\subsection*{Voorbeeld van CARLa output in versie 3}
+
+In versie 3 wordt CARLa gebruikt om per gebruiker de groepen aan te leveren. De output staat niet als aparte gebruiker-groep regels onder elkaar. Per gebruiker staat de volledige lijst met groepen op dezelfde regel. Als de regel te lang is, kan de lijst verdergaan op een vervolgregel.
+
+\begin{verbatim}
+PAY001 PAYROLL FINREAD BATCH01 BASEUSR
+PAY002 PAYROLL FINREAD BATCH01 BASEUSR
+PAY003 PAYROLL FINREAD BATCH01 BASEUSR
+PAY004 PAYROLL FINREAD BATCH01 HRVIEW BASEUSR
+HR001  HRVIEW HRUPD BASEUSR
+ADM001 PRODADM BASEUSR
+\end{verbatim}
+
+REXX leest deze regels en bouwt per gebruiker een groepslijst op. De eerste waarde op een nieuwe regel is de gebruiker. De waarden daarna zijn groepen. Een vervolgregel hoort bij dezelfde gebruiker.
+
+\section{Excludelijst}
+
+Versie 3 kan groepen uitsluiten. Een voorbeeld van een excludelijst:
+
+\begin{verbatim}
+BASEUSR
+DEFAULT
+TECHGRP
+\end{verbatim}
+
+In dit voorbeeld telt \texttt{BASEUSR} niet mee in de vergelijking. De groep komt wel voor in RACF, maar ze zegt weinig over de functie van de gebruiker. Door ze uit te sluiten, wordt de score minder vertekend.
+
+De excludelijst moet altijd verklaard worden. Een beheerder of auditor moet kunnen zien waarom een groep niet meetelt.
+
+\subsection*{Voorbeeld met motivatie voor uitsluiting}
+
+Een betere excludelijst bevat ook uitleg. Die uitleg hoeft niet door de PoC gelezen te worden, maar is nuttig voor documentatie.
+
+\begin{verbatim}
+BASEUSR  - algemene basisgroep, komt bij bijna iedereen voor
+DEFAULT  - standaardgroep, geen nuttige waarde voor deze analyse
+TECHGRP  - technische groep buiten de scope van deze audit
+\end{verbatim}
+
+Deze uitleg voorkomt discussie achteraf. Als iemand het rapport bekijkt, is duidelijk waarom deze groepen niet in de score staan.
+
+\subsection*{Groepslijsten na filtering}
+
+Na het toepassen van de excludelijst ziet de invoer er eenvoudiger uit.
+
+Voor filtering:
+
+\begin{verbatim}
+PAY001: PAYROLL, FINREAD, BATCH01, BASEUSR
+PAY002: PAYROLL, FINREAD, BATCH01, BASEUSR
+PAY004: PAYROLL, FINREAD, BATCH01, HRVIEW, BASEUSR
+\end{verbatim}
+
+Na filtering:
+
+\begin{verbatim}
+PAY001: PAYROLL, FINREAD, BATCH01
+PAY002: PAYROLL, FINREAD, BATCH01
+PAY004: PAYROLL, FINREAD, BATCH01, HRVIEW
+\end{verbatim}
+
+De groep \texttt{BASEUSR} telt niet meer mee. Daardoor wordt \texttt{HRVIEW} duidelijk zichtbaar als extra groep bij \texttt{PAY004}.
+
+\section{Score en rapport}
+
+Neem deze twee gebruikers:
+
+\begin{verbatim}
+PAY004: PAYROLL, FINREAD, BATCH01, HRVIEW
+PAY001: PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+De gedeelde groepen zijn:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+\end{verbatim}
+
+Dat zijn 3 groepen. De totale unieke lijst is:
+
+\begin{verbatim}
+PAYROLL
+FINREAD
+BATCH01
+HRVIEW
+\end{verbatim}
+
+Dat zijn 4 groepen. De score is dus:
+
+\[
+\frac{3}{4} = 0,75
+\]
+
+De additional group van \texttt{PAY004} is \texttt{HRVIEW}. Er zijn geen missing groups voor \texttt{PAY004} in deze vergelijking.
+
+\subsection*{Voorbeeld van een eenvoudig rapport}
+
+Een rapport kan er zo uitzien:
+
+\begin{verbatim}
+PRIVILEGE CREEP REVIEW REPORT
+
+USER:              PAY001
+MOST SIMILAR USER: PAY002
+SIMILARITY SCORE:  1.00
+ADDITIONAL GROUPS: -
+MISSING GROUPS:    -
+
+USER:              PAY002
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  1.00
+ADDITIONAL GROUPS: -
+MISSING GROUPS:    -
+
+USER:              PAY004
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  0.75
+ADDITIONAL GROUPS: HRVIEW
+MISSING GROUPS:    -
+
+USER:              HR001
+MOST SIMILAR USER: PAY004
+SIMILARITY SCORE:  0.20
+ADDITIONAL GROUPS: HRUPD
+MISSING GROUPS:    PAYROLL, FINREAD, BATCH01
+\end{verbatim}
+
+De eerste twee gebruikers zijn gelijk. \texttt{PAY004} heeft een extra groep. \texttt{HR001} heeft een lage score met \texttt{PAY004}. Dat betekent dat die vergelijking minder sterk is.
+
+\section{Gebruik in review}
+
+De beheerder begint niet met rechten verwijderen. De beheerder stelt vragen.
+
+Bij \texttt{PAY004} is de vraag:
+
+\begin{verbatim}
+Waarom heeft PAY004 de groep HRVIEW?
+\end{verbatim}
+
+Mogelijke antwoorden:
+
+\begin{itemize}
+	\item de gebruiker heeft nog een HR taak;
+	\item de gebruiker was vroeger HR back-up;
+	\item de groep is vergeten na een project;
+	\item de groep is fout toegekend.
+\end{itemize}
+
+Alleen na controle kan beslist worden wat moet gebeuren.
+
+\subsection*{Voorbeeld van auditnotities}
+
+Een auditor of beheerder kan per melding een korte notitie maken.
+
+\begin{verbatim}
+USER: PAY004
+ADDITIONAL GROUP: HRVIEW
+EIGENAAR: HR applicatiebeheer
+CONTROLE: toegang gevraagd tijdens project HR-2025
+BESLISSING: niet meer nodig
+ACTIE: verwijdering aanvragen via changeproces
+\end{verbatim}
+
+Of:
+
+\begin{verbatim}
+USER: PAY004
+ADDITIONAL GROUP: HRVIEW
+EIGENAAR: HR applicatiebeheer
+CONTROLE: gebruiker is nog back-up voor HR rapportage
+BESLISSING: toegang blijft nodig
+ACTIE: documentatie bijwerken
+\end{verbatim}
+
+Deze notities tonen waarom de PoC geen automatische beslissing mag nemen. Dezelfde additional group kan fout zijn of juist correct zijn.
+
+\subsection*{Voorbeeld van een zwakke match}
+
+Niet elke match is even nuttig.
+
+\begin{verbatim}
+USER:              ADM001
+MOST SIMILAR USER: PAY004
+SIMILARITY SCORE:  0.10
+ADDITIONAL GROUPS: PRODADM
+MISSING GROUPS:    PAYROLL, FINREAD, BATCH01, HRVIEW
+\end{verbatim}
+
+Deze vergelijking is zwak. \texttt{ADM001} lijkt niet echt op \texttt{PAY004}. De beheerder moet eerst controleren of \texttt{ADM001} wel in dezelfde analyse hoort.
+
+Dit kan betekenen dat technische of beheeraccounts beter apart bekeken worden.
+
+\subsection*{Voorbeeld van een brede gebruiker}
+
+Een brede gebruiker heeft veel groepen.
+
+\begin{verbatim}
+USER:              USR999
+MOST SIMILAR USER: PAY001
+SIMILARITY SCORE:  0.43
+ADDITIONAL GROUPS: HRVIEW, HRUPD, PRODADM, TESTADM
+MISSING GROUPS:    -
+\end{verbatim}
+
+De score is niet heel hoog. Toch is dit resultaat interessant. De gebruiker heeft veel extra groepen. De beheerder moet nagaan waarom die groepen samen voorkomen.
+
+Een brede gebruiker kan een geldige beheerrol hebben. Maar het kan ook gaan om oude toegang die nooit is opgeruimd.
+
+\subsection*{Voorbeeld van een herhaalde review}
+
+Als de analyse elke maand wordt uitgevoerd, kan men veranderingen volgen.
+
+Maand 1:
+
+\begin{verbatim}
+PAY004 additional groups: HRVIEW
+USR999 additional groups: HRVIEW, HRUPD, PRODADM
+\end{verbatim}
+
+Maand 2:
+
+\begin{verbatim}
+PAY004 additional groups: -
+USR999 additional groups: HRVIEW, HRUPD, PRODADM
+\end{verbatim}
+
+Hier lijkt \texttt{PAY004} opgelost. \texttt{USR999} blijft hetzelfde probleem tonen. Dat kan betekenen dat \texttt{USR999} verder onderzocht moet worden.
+
+\subsection*{Waarom deze bijlage nuttig is}
+
+De hoofdtekst legt de methode uit. Deze bijlage toont hoe de bestanden eruit kunnen zien. Dat maakt de PoC makkelijker te begrijpen.
+
+De voorbeelden zijn niet bedoeld als exacte productiecode. Ze tonen de vorm van de input, de tussenstappen en de output.
+
+Een echte omgeving zal andere groepsnamen, gebruikers en datasets hebben. Het principe blijft hetzelfde.

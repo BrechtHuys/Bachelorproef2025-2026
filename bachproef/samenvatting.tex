@@ -2,47 +2,49 @@
 %% Samenvatting
 %%=============================================================================
 
-% TODO: De "abstract" of samenvatting is een kernachtige (~ 1 blz. voor een
-% thesis) synthese van het document.
-%
-% Een goede abstract biedt een kernachtig antwoord op volgende vragen:
-%
-% 1. Waarover gaat de bachelorproef?
-% 2. Waarom heb je er over geschreven?
-% 3. Hoe heb je het onderzoek uitgevoerd?
-% 4. Wat waren de resultaten? Wat blijkt uit je onderzoek?
-% 5. Wat betekenen je resultaten? Wat is de relevantie voor het werkveld?
-%
-% Daarom bestaat een abstract uit volgende componenten:
-%
-% - inleiding + kaderen thema
-% - probleemstelling
-% - (centrale) onderzoeksvraag
-% - onderzoeksdoelstelling
-% - methodologie
-% - resultaten (beperk tot de belangrijkste, relevant voor de onderzoeksvraag)
-% - conclusies, aanbevelingen, beperkingen
-%
-% LET OP! Een samenvatting is GEEN voorwoord!
-
 %%---------- Nederlandse samenvatting -----------------------------------------
-%
-% TODO: Als je je bachelorproef in het Engels schrijft, moet je eerst een
-% Nederlandse samenvatting invoegen. Haal daarvoor onderstaande code uit
-% commentaar.
-% Wie zijn bachelorproef in het Nederlands schrijft, kan dit negeren, de inhoud
-% wordt niet in het document ingevoegd.
 
 \IfLanguageName{english}{%
 \selectlanguage{dutch}
 \chapter*{Samenvatting}
-\lipsum[1-4]
+Deze bachelorproef onderzoekt hoe privilege creep binnen RACF op IBM z/OS zichtbaar kan worden gemaakt. Privilege creep betekent dat gebruikers na verloop van tijd meer rechten houden dan ze nodig hebben. In RACF gebeurt dit vaak via groepen die vroeger nodig waren, maar later niet werden verwijderd.
 \selectlanguage{english}
 }{}
 
 %%---------- Samenvatting -----------------------------------------------------
-% De samenvatting in de hoofdtaal van het document
 
 \chapter*{\IfLanguageName{dutch}{Samenvatting}{Abstract}}
 
-\lipsum[1-4]
+Deze bachelorproef gaat over privilege creep in RACF op IBM z/OS. RACF beheert gebruikers, groepen en rechten op mainframes. Die mainframes verwerken vaak belangrijke bedrijfsprocessen. Daarom is het gevaarlijk als gebruikers te veel rechten hebben.
+
+Privilege creep ontstaat wanneer rechten blijven staan nadat ze niet meer nodig zijn. Een gebruiker krijgt bijvoorbeeld extra toegang voor een project, een vorige functie of een tijdelijke taak. Later verandert de taak, maar de groep blijft gekoppeld aan de gebruiker. Zo groeit het rechtenpakket langzaam verder.
+
+De centrale vraag is hoe zulke situaties technisch gevonden kunnen worden met RACF gegevens. Dit is het probleemdomein van de bachelorproef. De bachelorproef richt zich vooral op gebruikers en groepen. De PoC kijkt niet naar elke resource in detail, maar gebruikt groepslidmaatschappen als eerste controlelaag.
+
+Die keuze past bij een RBAC-aanpak. Voor persoonlijke gebruikers worden rechten vaak via groepen beheerd. Daardoor is een controle op groepen een logische manier om oude of afwijkende toegang zichtbaar te maken. Technische gebruikers en non-personal accounts vallen buiten de scope, omdat hun rechten vaak anders worden beheerd.
+
+De methode werkt als volgt. Voor elke gebruiker wordt een lijst van groepen gemaakt. Daarna vergelijkt de PoC die lijst met de groepslijsten van andere gebruikers. De gebruiker die het meest lijkt op de onderzochte gebruiker wordt gekozen als referentie. De overeenkomst wordt weergegeven met een similarity score. Een score dicht bij 1 betekent dat twee gebruikers bijna dezelfde groepen hebben. Een score dicht bij 0 betekent dat ze weinig groepen delen.
+
+Het rapport toont per gebruiker vijf zaken: de gebruiker, de meest gelijkaardige gebruiker, de similarity score, de additional groups en de missing groups. Additional groups zijn groepen die de onderzochte gebruiker wel heeft, maar de referentiegebruiker niet. Die groepen zijn interessant voor privilege creep, omdat ze extra toegang kunnen tonen. Missing groups tonen het omgekeerde verschil en helpen om de vergelijking te begrijpen.
+
+Het oplossingsdomein is een technische PoC met JCL, REXX en CARLa. De PoC werd in drie versies gebouwd. Versie 1 gebruikt JCL en twee REXX scripts. Het eerste script haalt gebruikers op uit groepen die in een sequentiele dataset staan. Het tweede script haalt de groepen van die gebruikers op, vergelijkt de gebruikers en maakt het rapport.
+
+Versie 2 gebruikt CARLa om de gebruikers op te halen. Daardoor wordt de selectie duidelijker en beter herhaalbaar. REXX blijft de vergelijking en het rapport uitvoeren.
+
+Versie 3 gebruikt CARLa om zowel de gebruikers als hun groepen op te halen. REXX verwerkt daarna de gegevens en maakt het rapport. In deze versie is er ook een excludelijst. Daarmee kunnen groepen worden uitgesloten die geen nut hebben voor de vergelijking. Voorbeelden zijn algemene basisgroepen of technische groepen zonder relevante rechten. Door die groepen uit te sluiten, wordt de score minder vertekend.
+
+De evaluatie toont dat de PoC doet wat binnen de scope verwacht wordt. Gebruikers met dezelfde groepen krijgen een score van 1. Gebruikers zonder overlap krijgen een score van 0. Gebruikers met extra groepen worden duidelijk getoond via additional groups. De excludelijst helpt wanneer een algemene groep, zoals \texttt{BASEUSR}, bij veel gebruikers voorkomt en de score anders kunstmatig zou verhogen.
+
+De sterkte van de PoC is dat het rapport uitlegbaar is. De beheerder ziet niet alleen dat een gebruiker afwijkt, maar ook met wie die gebruiker wordt vergeleken en welke groepen verschillen. Dat maakt de output bruikbaar voor RACF beheerders en auditors.
+
+De PoC heeft ook beperkingen. Een additional group is niet automatisch fout. Een gebruiker kan een extra groep nodig hebben voor een geldige reden. De PoC toont dus aandachtspunten, geen bewezen fouten. Ook kijkt deze versie vooral naar groepen. Resourceprofielen, toegangsniveaus en gebruiksdata worden nog niet volledig meegenomen.
+
+De PoC kijkt ook niet in de inhoud van groepen zelf. Als een groep door reorganisaties te veel autorisaties bevat, ziet de PoC dat niet rechtstreeks. Daarvoor blijft een aparte groepsreview nodig.
+
+De conclusie is dat privilege creep in RACF zichtbaar kan worden gemaakt door gebruikers als groepssets te vergelijken. De derde versie is de beste basis, omdat CARLa de data ophaalt en REXX de analyse uitvoert. De excludelijst maakt de vergelijking bruikbaarder. De PoC is geen automatisch opschoningssysteem, maar wel een hulpmiddel voor toegangsreviews en audits.
+
+Voor toekomstig werk zijn drie uitbreidingen nuttig. Ten eerste kan de PoC groepen koppelen aan resourceprofielen. Ten tweede kan gebruiksdata worden toegevoegd om te zien of rechten nog gebruikt worden. Ten derde kan een risicoscore helpen om gevoelige groepen beter te beoordelen.
+
+De belangrijkste praktische aanbeveling is om de PoC gericht te gebruiken. Een analyse per applicatie, afdeling of type gebruiker is beter dan een te brede analyse. Technische accounts worden best apart bekeken. Ook de excludelijst moet goed worden bijgehouden. Elke uitgesloten groep moet een duidelijke reden hebben.
+
+Het rapport moet altijd gelezen worden als startpunt voor verder onderzoek. Het zegt niet dat een gebruiker fout zit. Het zegt wel dat er een verschil is dat uitleg nodig heeft. Dat maakt de PoC nuttig voor periodieke toegangsreviews.

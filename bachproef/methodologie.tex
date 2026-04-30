@@ -2,106 +2,95 @@
 %% Methodologie
 %%=============================================================================
 
-\chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
+\chapter[Methodologie]{\IfLanguageName{dutch}{Methodologie: aanpak, vereisten en testmethode}{Methodology: approach, requirements and test method}}%
 \label{ch:methodologie}
-Deze bachelorproef hanteert een toegepaste onderzoeksbenadering, waarbij zowel analytische als technische onderzoeksmethoden worden gecombineerd om het probleem van privilege creep in RACF omgevingen te onderzoeken en een concrete oplossing te ontwikkelen. Het onderzoek is verdeeld in drie duidelijk gedefinieerde fasen: een analysefase, een ontwikkelings en testfase, en een synthese en evaluatiefase. Deze fasen zijn ontworpen om zowel het probleemgebied als het oplossingsgebied systematisch aan te pakken, en om een reproduceerbare, technisch onderbouwde aanpak te bereiken.
 
-\section{Analysefase Probleemgebied}
-In de analysefase wordt inzicht verkregen in het ontstaan, de impact en de mechanismen van privilege creep binnen RACF omgevingen. Hiervoor worden drie onderzoeksmethoden gecombineerd: literatuuronderzoek, documentanalyse en interviews met belanghebbenden.
+Deze bachelorproef gebruikt een praktische aanpak. Eerst wordt het probleem onderzocht. Dat is het probleemdomein. Daarna wordt een Proof of Concept gebouwd. Dat is het oplossingsdomein. Ten slotte wordt de PoC getest en beoordeeld.
+
+\section{Analysefase: probleemdomein}
+
+In de analysefase wordt onderzocht wat privilege creep is en hoe het in RACF kan ontstaan. Hiervoor worden drie bronnen gebruikt:
+
 \begin{itemize}
-	\item Literatuuronderzoek: Academische en technische bronnen worden bestudeerd met betrekking tot privilege creep, het principe van de Least privilege, en Identity & Access Management binnen mainframe omgevingen. Dit biedt een theoretisch kader voor het begrijpen van de oorzaken en gevolgen van overmatige privileges.
-	\item Documentanalyse: RACF  en z/OS gerelateerde documentatie wordt onderzocht, inclusief:
-	\begin{itemize}
-		\item IBM RACF Beheerder van Beveiliging Gids
-		\item Compliance en auditrichtlijnen met betrekking tot toegangsbeheer en het principe van de Least privileges	
-		\item RACF Administratiehandleiding
-	\end{itemize}
-	\item Technische analyse van RACF gegevens: RACF extracts en configuratiegegevens worden onderzocht om inzicht te krijgen in gebruikersstructuren, groepshiërarchieën en toegewezen autorisaties. De focus ligt op het identificeren van patronen zoals:
-	\begin{itemize}
-		\item Gebruikers met overlappende groepslidmaatschappen	
-		\item Langdurig verleende privileges zonder duidelijke functionele noodzaak	
-		\item Afwijkingen van het principe van de Least privileges
-	\end{itemize}
-	Stakeholderinterviews: Semi gestructureerde interviews worden afgenomen met RACF beveiligingsbeheerders en auditmanagers om de technische bevindingen te contextualiseren. De interviews richten zich op:
-	\begin{itemize}
-		\item Huidige processen voor het verlenen en intrekken van rechten	
-		\item Knopen in toegangsevaluaties en audits	
-		\item Ervaringen en verwachtingen met betrekking tot geautomatiseerde detectie van privilege creep
-	\end{itemize}
+	\item literatuur over least privilege, IAM en privilege creep;
+	\item documentatie over RACF en z/OS;
+	\item technische analyse van gebruikers en groepen.
 \end{itemize}
 
-\section{Ontwikkelings en Testfase Oplossingsdomein}
-In deze fase wordt er een technische Proof of Concept (PoC) ontwikkeld om privilege creep systematisch te detecteren. De PoC analyseert specifieke RACF gegevens , zoals:
+De analyse richt zich vooral op groepslidmaatschappen. In RACF krijgen gebruikers vaak rechten via groepen. Daarom zijn groepen een logisch startpunt voor detectie.
+
+\section{Ontwikkelingsfase: oplossingsdomein}
+
+In de ontwikkelingsfase wordt een Proof of Concept gebouwd. De PoC moet RACF gebruikers en groepen kunnen verwerken. Daarna moet ze gebruikers met elkaar vergelijken.
+
+De PoC is in drie versies gebouwd:
+
 \begin{itemize}
-	\item Gebruikersprofielen (GEBRUIKERSID, SPECIAAL, OPERATIES, AUDITOR)
-	\item Groepslidmaatschappen en hiërarchieën
-	\item Dataset en algemene bronnenprofielen met bijbehorende autorisaties
-	\item Beschikbare activiteit of laatste gebruiksinformatie
-\end{itemize}
-De PoC is geïmplementeerd als een zelfstandige script of tool die RACF exportgegevens verwerkt. De nadruk ligt op reproduceerbaarheid en transparantie, zodat de analyse herhaalbaar is en de resultaten begrijpelijk blijven voor RACF beheerders. De output bestaat uit gestructureerde rapporten die potentiële gevallen van privilege creep per gebruiker weergeven.
-\begin{itemize}
-	\item De PoC wordt getest in een gecontroleerde z/OS testomgeving. De testfase omvat representatieve scenario's, waaronder:
-	\item Gebruikers met privileges van  groepen die niet langer overeenkomen met hun rol
-	\item Gebruikers met verhoogde privileges die lange tijd niet zijn gebruikt
+	\item versie 1 gebruikt JCL en twee REXX scripts;
+	\item versie 2 gebruikt CARLa om gebruikers op te halen;
+	\item versie 3 gebruikt CARLa om gebruikers en groepen op te halen.
 \end{itemize}
 
-\section{Synthese en Evaluatie Fase}
-Synthese en Evaluatiefase In de laatste fase worden de resultaten van de analyse en ontwikkelingsfases samengebracht. De werking van de PoC wordt geëvalueerd op:
+In versie 3 is ook een excludelijst toegevoegd. Daarmee kunnen groepen worden uitgesloten die geen nut hebben voor de vergelijking.
+
+\section{Testfase: controle van de oplossing}
+
+De PoC wordt getest met gecontroleerde scenario's. Die scenario's bevatten gebruikers met gelijke groepen, extra groepen, algemene groepen en gebruikers zonder goede match.
+
+De testfase controleert vooral drie zaken:
+
 \begin{itemize}
-	\item Correctheid: detecteert de tool nauwkeurig gevallen van privilege creep?
-	\item Reproduceerbaarheid: levert de analyse identieke resultaten op bij herhaling?
-	\item Praktische toepasbaarheid: is de output interpreteerbaar en bruikbaar voor RACF beheerders en auditors?
+	\item worden gebruikers en groepen correct gelezen?
+	\item wordt de similarity score correct berekend?
+	\item toont het rapport de juiste additional en missing groups?
 \end{itemize}
-Op basis van deze evaluatie worden concrete aanbevelingen geformuleerd om privilege creep binnen RACF te beheersen, met de nadruk op periodieke toegangsbeoordelingen en technische ondersteuning voor auditprocessen.
-\section{Vereisteanalyse}
-De functionele en niet-functionele vereisten van de PoC zijn afgeleid van literatuur, documentatie en verwachtingen van belanghebbenden.
-Doel: Het ondersteunen van RACF beheerders en auditors bij het identificeren van historisch gegroeide, overbodige of risicovolle autorisaties.
 
-Functionele vereisten (FR):
+\subsection*{Evaluatiefase}
+
+In de evaluatiefase wordt bekeken of de PoC bruikbaar is. De beoordeling gebeurt op drie criteria:
+
 \begin{itemize}
-	\item FR1: Het analyseren van gebruikersprofielen inclusief attributen
-	\item FR2: Het in kaart brengen van groepslidmaatschappen en hiërarchieën
-	\item FR3: Het genereren van gestructureerde rapporten per gebruiker
+	\item correctheid;
+	\item herhaalbaarheid;
+	\item leesbaarheid van het rapport.
 \end{itemize}
-Niet-functionele vereisten (NFR):
+
+De PoC wordt niet beoordeeld als volledig automatisch beslissysteem. Ze is bedoeld als hulpmiddel voor beheerders en auditors.
+
+\section{Vereisten en PoC-criteria}
+
+De belangrijkste functionele vereisten zijn:
+
 \begin{itemize}
-	\item NFR1: Reproduceerbare analyses
-	\item NFR2: Transparantie en interpreteerbaarheid voor beheerders
-	\item NFR3: Geen wijzigingen aan RACF configuraties of productiedata
-	\item NFR4: Schaalbaarheid naar grote RACF omgevingen
-	\item NFR5: Naleving van beveiligings en compliance richtlijnen
+	\item de PoC kan gebruikers verwerken;
+	\item de PoC kan groepen per gebruiker verwerken;
+	\item de PoC kan gebruikers vergelijken;
+	\item de PoC kan een rapport maken.
 \end{itemize}
-Voorwaarden en aannames: toegang tot representatieve RACF exportgegevens, focus op detectie en rapportage, geen GUI, proof of concept gericht op technische haalbaarheid.
 
-Scope: geen realtime monitoring, geen automatische intrekking van autorisaties, of integratie met externe IAM platforms.
+De belangrijkste niet-functionele vereisten zijn:
 
-\section{Fasering van Planning}
 \begin{itemize}
-	\item Fase 1  Analyse (februari 2026): literatuuronderzoek, documentanalyse, identificatie van relevante data elementen
-	\item Fase 2  Ontwerp (maart 2026): functioneel en technisch ontwerp van PoC, datamodellen en rapportagestructuur
-	\item Fase 3  Implementatie (april 2026): ontwikkeling van PoC en verwerking van RACF gegevens
-	\item Fase 4  Testen en evaluatie (mei 2026): uitvoering van scenario's, evaluatie van juistheid en reproduceerbaarheid
-	\item Fase 5  Synthese en Rapportage (mei 2026): resultaten analyseren, aanbevelingen formuleren, bachelorthesis afronden
+	\item de analyse moet herhaalbaar zijn;
+	\item de output moet begrijpelijk zijn;
+	\item de PoC mag RACF niet aanpassen;
+	\item de PoC moet bruikbaar zijn in een z/OS context.
 \end{itemize}
-%% TODO: In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
-%% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
-%% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
-%% onderzoeksmethoden je daarbij toegepast hebt. Verantwoord waarom je
-%% op deze manier te werk gegaan bent.
-%% 
-%% Voorbeelden van zulke fasen zijn: literatuurstudie, opstellen van een
-%% requirements-analyse, opstellen long-list (bij vergelijkende studie),
-%% selectie van geschikte tools (bij vergelijkende studie, "short-list"),
-%% opzetten testopstelling/PoC, uitvoeren testen en verzamelen
-%% van resultaten, analyse van resultaten, ...
-%%
-%% !!!!! LET OP !!!!!
-%%
-%% Het is uitdrukkelijk NIET de bedoeling dat je het grootste deel van de corpus
-%% van je bachelorproef in dit hoofstuk verwerkt! Dit hoofdstuk is eerder een
-%% kort overzicht van je plan van aanpak.
-%%
-%% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
-%% en geef het een gepaste titel.
 
+De link met de PoC-criteria is bewust eenvoudig gehouden. De PoC wordt later beoordeeld op deze punten:
 
+\begin{itemize}
+	\item de PoC leest gebruikers en groepen correct in;
+	\item de PoC berekent de similarity score correct;
+	\item de PoC toont additional groups en missing groups aan de juiste kant;
+	\item de PoC kan niet-relevante groepen uitsluiten via de excludelijst;
+	\item het rapport is begrijpelijk voor beheerders en auditors.
+\end{itemize}
+
+Deze criteria verbinden het probleem met de oplossing. Het probleem is dat te veel groepen moeilijk zichtbaar zijn. De oplossing moet daarom vooral duidelijk tonen welke groepen extra zijn en waarom een gebruiker opvalt. De evaluatie in Hoofdstuk~\ref{ch:evaluatie} gebruikt deze criteria opnieuw.
+
+\subsection*{Afbakening}
+
+Deze bachelorproef richt zich op detectie en rapportage. Automatische remediatie valt buiten de scope. Ook realtime monitoring en volledige resourceanalyse vallen buiten de scope.
+
+De PoC geeft dus geen definitief oordeel over elke gebruiker. Ze toont aandachtspunten die verder onderzocht moeten worden.
